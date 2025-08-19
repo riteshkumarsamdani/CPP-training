@@ -6,11 +6,11 @@
 int check_sign(const char*& input)
 {   
     int sign = 1;
-    if(input[0] == '+')
+    if(*input == '+')
     {
         input++;
     }
-    else if(input[0] == '-')
+    else if(*input == '-')
     {
         sign = -1;
         input++;
@@ -20,14 +20,13 @@ int check_sign(const char*& input)
 
 double find_power(const char* input){
     double pow = 1;
-    int index = 0;
     int pow_num = 0;
     int sign = check_sign(input);
-    while(input)
+    while(*input != '\0')
     {
-        if(input[index] >= '0' && input[index] <= '9')
+        if(*input >= '0' && *input <= '9')
         {
-            pow_num = (10 * input[index] - '0');
+            pow_num = (10 * (*input) - '0');
         }
         else
         {
@@ -75,26 +74,25 @@ double hexa_val(const char* input)
     double deci = 1;
     int flag = 0;
     double power = 1;
-    int i=0;
-    while(input)
+    while(*input != '\n')
     { 
-        if(input[i] >= '0' && input[i] <= '9')
+        if(*input >= '0' && *input <= '9')
         {
-            hex_val = 16 * hex_val + (input[i] - '0');
+            hex_val = 16 * hex_val + (*input - '0');
             deci = (flag == 1) ? deci * 16 : deci;
         }
-        else if(input[i] >= 'a' && input[i] <= 'f')
+        else if(*input >= 'a' && *input <= 'f')
         {
-            hex_val = 16 * hex_val + ((input[i] - 'a')+10);
+            hex_val = 16 * hex_val + ((*input - 'a')+10);
             deci = (flag==1) ? deci * 16 : deci;
         }
-        else if(input[i] == 'p')
+        else if(*input == 'p')
         {
             input++;
             power = find_power(input);
             break;
         }
-        else if(input[i] == '.' && (flag == 0))
+        else if(*input == '.' && (flag == 0))
         {
             flag = 1;
         }
@@ -114,21 +112,20 @@ double decimal_val(const char* input)
     double deci = 1;
     int flag = 0;
     double exponential = 1;
-    int i=0;
-    while(input)
+    while(*input != '\0')
     {
-        if(input[i] >= '0' && input[i] <= '9')
+        if(*input >= '0' && *input <= '9')
         {
-            integer = 10 * integer + (input[i] - '0');
+            integer = 10 * integer + (*input - '0');
             deci = (flag == 1) ? (deci * 10) : deci;
         }
-        else if(input[i] == 'e')
+        else if(*input == 'e')
         {
             input++;
             exponential = find_exponent(input);
             break;
         }
-        else if(input[i] == '.' && (flag == 0))
+        else if(*input == '.' && (flag == 0))
         {
             flag = 1;
         }
@@ -180,7 +177,8 @@ std::string to_lower(std::string input)
 
 int main()
 {
-    while(true)
+    bool run=1;
+    while(run)
     {
         std::cout << "enter string for conversion :" << std::endl;
         std::string input;
@@ -191,6 +189,8 @@ int main()
         std::cout << "string input value is : " << input 
         << "\noutput from my_atof function is : " << output 
         << "\noutput from original atof function is : " <<original_output << std::endl;
+        std::cout << "enter 1 to continue or type anything to close\n";
+        std::cin >> run;
     }
     return 0;
 }
