@@ -1,138 +1,196 @@
 #include<iostream>
-#include<string>
 #include<cmath>
-using namespace std;
-bool checkInf(string s1){
-    string data[]={"inf","inF","iNf","iNF","Inf","InF","INf","INF"};
-    for(int i=0;i<8;i++){
-        if(s1==data[i]) return 1;
-    }
-    return 0;
+#include<string>
+#include <cstring>
 
-}
-bool checkNan(string s1){
-    string data[]={"nan","naN","nAn","nAN","Nan","NaN","NAn","NAN"};
-    for(int i=0;i<8;i++){
-        if(s1==data[i]) return 1;
+int check_sign(const char*& input)
+{   
+    int sign = 1;
+    if(input[0] == '+')
+    {
+        input++;
     }
-    return 0;
+    else if(input[0] == '-')
+    {
+        sign = -1;
+        input++;
+    }
+    return sign;
 }
-double atof(string str){
-    double ans=0.0;
-    int sign=1;
+
+double find_power(const char* input){
+    double pow = 1;
+    int index = 0;
+    int pow_num = 0;
+    int sign = check_sign(input);
+    while(input)
+    {
+        if(input[index] >= '0' && input[index] <= '9')
+        {
+            pow_num = (10 * input[index] - '0');
+        }
+        else
+        {
+            break;
+        }
+    }
+    pow = std::pow(2, pow_num * sign);
+    return pow;
+}
+
+double find_exponent(const char* input){
+    double exp = 1;
+    int index = 0;
+    int exp_num = 0;
+    int sign = check_sign(input);
+    while(*input != '\0')
+    {
+        if((*input >= '0') && (*input <= '9'))
+        {
+            exp_num = 10 * exp_num + (*input - '0');
+        }
+        else
+        {
+            break;
+        }
+        input++;
+    }
+    exp = std::pow(10, (exp_num * sign));
+    return exp;
+}
+
+bool checkInf(std::string input)
+{
+    return (input == "inf") ? true : false;
+}
+
+bool checkNan(std::string input)
+{
+    return (input == "nan") ? true : false;
+}
+
+double hexa_val(const char* input)
+{
+    double hex_val = 0;
+    double deci = 1;
+    int flag = 0;
+    double power = 1;
     int i=0;
-    bool decimal=false;
-    double temp=1;
-    bool exponent=false;
-    bool power=false;
-    int r=0;
-    int rs=1;
-    bool hexa=false;
-    while(str[i]==' '){
-        i++;
+    while(input)
+    { 
+        if(input[i] >= '0' && input[i] <= '9')
+        {
+            hex_val = 16 * hex_val + (input[i] - '0');
+            deci = (flag == 1) ? deci * 16 : deci;
+        }
+        else if(input[i] >= 'a' && input[i] <= 'f')
+        {
+            hex_val = 16 * hex_val + ((input[i] - 'a')+10);
+            deci = (flag==1) ? deci * 16 : deci;
+        }
+        else if(input[i] == 'p')
+        {
+            input++;
+            power = find_power(input);
+            break;
+        }
+        else if(input[i] == '.' && (flag == 0))
+        {
+            flag = 1;
+        }
+        else
+        {
+            break;
+        }
+        input++;
     }
-    if(str[i]=='-'){
-        sign=-1;
-        i++;
-    }
-    else if(str[i]=='+'){
-        i++;
-    }
-    while(i<str.length()){
-        if(power || exponent){
-            if(str[i]<='9' && str[i]>='0'){
-                r=r*10+str[i]-'0';
-            }
-            else if(str[i]=='-' && r==0) rs=-1;
-            else if(str[i]=='+' && r==0) rs=1;
-            else break;
-        }
-        else if(hexa){
-            if(str[i]<='9' && str[i]>='0'){
-                ans=ans*16+str[i]-'0';
-            }
-            else if(str[i]<='f' && str[i]>='a'){
-                ans=ans*16+(str[i]-'a'+10);
-            }
-            else if(str[i]<='F' && str[i]>='A'){
-                ans=ans*16+(str[i]-'A'+10);
-            }
-            else if(str[i]=='p' || str[i]=='P'){
-            if(power==false){
-                power=true;
-            }
-            else break;
-        }
-            else break;
-        }
-        else if(!decimal && str[i]<='9' && str[i]>='0'){
-            ans=ans*10+(str[i]-'0');
-        }
-        else if(decimal && str[i]<='9' && str[i]>='0'){
-            ans=ans*10+(str[i]-'0');
-            temp=temp*10;
-        }
-        else if(str[i]=='.') decimal=true;
-        else if(str[i]=='e' || str[i]=='E'){
-            if(exponent==false && hexa==false){
-                exponent=true;
-            }
-            else break;
-        }
-        else if(str[i]=='x' || str[i]=='X'){
-            if(!hexa && ans==0){
-                hexa=true;
-            }
-            else break;
-        }
-        else if(checkInf(str.substr(i,3))){
-            return sign*INFINITY;
-        }
-        else if(checkNan(str.substr(i,3))){
-            return sign*NAN;
-        }
-        else break;
-        i++;
-    }
-    ans=ans*sign;
-    ans=ans/temp;
-    if(exponent){
-        if(rs==-1){
-            while(r){
-                ans/=10;
-                r--;
-            }
-        }
-        else{
-            while(r){
-                ans=ans*10;
-                r--;
-        }
-        }
-        
-    }
-    if(power){
-        if(rs==-1){
-            while(r){
-                ans/=2;
-                r--;
-            }
-        }
-        else{
-            while(r){
-                ans=ans*2;
-                r--;
-        }
-        }
-        
-    }
-    return ans;
+    double atof_val = (hex_val / deci) * power;
+    return atof_val;
 }
-int main(){
-    string str;
-    cout<<"enter string for conversion"<<endl;
-    cin>>str;
-    double ans=atof(str);
-    cout<<"string value is:"<<str<<"\natof value is:"<<ans<<endl;
+
+double decimal_val(const char* input)
+{
+    double integer = 0;
+    double deci = 1;
+    int flag = 0;
+    double exponential = 1;
+    int i=0;
+    while(input)
+    {
+        if(input[i] >= '0' && input[i] <= '9')
+        {
+            integer = 10 * integer + (input[i] - '0');
+            deci = (flag == 1) ? (deci * 10) : deci;
+        }
+        else if(input[i] == 'e')
+        {
+            input++;
+            exponential = find_exponent(input);
+            break;
+        }
+        else if(input[i] == '.' && (flag == 0))
+        {
+            flag = 1;
+        }
+        else
+        {
+            break;
+        }
+        input++;
+    }
+    double atof_val = (integer / deci) * exponential;
+    return atof_val;
+}
+
+double my_atof(const char* input)
+{
+    int sign=1;
+    sign = check_sign(input);
+    double atof_val;
+    std::string str=input;
+    bool hexa = str.substr(0,2) == "0x" ? true : false;
+    bool nan = checkNan(str.substr(0,3));
+    bool inf = checkInf(str.substr(0,3));
+    if(nan)
+    {
+        atof_val = NAN;
+    }
+    else if(inf)
+    {
+        atof_val = INFINITY;
+    }
+    else if(hexa)
+    {
+        atof_val = hexa_val(str.substr(2,str.length()).c_str());
+    }
+    else{
+        atof_val = decimal_val(input);
+    }
+    return atof_val*sign;
+}
+
+std::string to_lower(std::string input)
+{
+    for(auto c : input)
+    {
+        c = std::tolower(c);
+    }
+    return input;
+}
+
+int main()
+{
+    while(true)
+    {
+        std::cout << "enter string for conversion :" << std::endl;
+        std::string input;
+        std::getline(std::cin >> std::ws, input); 
+        input = to_lower(input);
+        double output = my_atof(input.c_str());
+        double original_output = std::atof(input.c_str());
+        std::cout << "string input value is : " << input 
+        << "\noutput from my_atof function is : " << output 
+        << "\noutput from original atof function is : " <<original_output << std::endl;
+    }
     return 0;
 }
