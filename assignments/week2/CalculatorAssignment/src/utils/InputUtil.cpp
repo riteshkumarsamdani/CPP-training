@@ -1,6 +1,7 @@
-#include <iostream>
-#include <limits>
-#include "InputUtil.h"
+#include<iostream>
+#include<limits>
+#include<sstream>
+#include"utils/InputUtils.h"
 
 char getValidOprator()
 {
@@ -18,20 +19,23 @@ char getValidOprator()
             std::cout << "please select (+, -, *, /)\n";
         }
     }
-    return *oprator.c_str();
+    return oprator.front();
 }
 
-double getValidInput() 
-{
+double getValidInput() {
+    std::string input;
     double value;
-    while (true) {
-        std::cin >> value;
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid input. Please enter a valid number.\n";
-        } else {
+    while (true) 
+    {
+        std::getline(std::cin >> std::ws, input);
+        std::stringstream output(input);
+        if (output >> value && output.eof()) 
+        {
             break;
+        } 
+        else 
+        {
+            std::cout << "Invalid input. Please enter a valid number.\n";
         }
     }
     return value;
