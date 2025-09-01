@@ -49,7 +49,7 @@ int getDimension()
     std::string input;
     getline(std::cin >> std::ws, input);
     int dimension = validInt(input);
-    while(dimension == intMax())
+    while(dimension == intMax() || dimension < 0)
     {
         std::cout<< "Invalid input for dimension\n";
         getline(std::cin >> std::ws, input);
