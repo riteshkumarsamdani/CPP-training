@@ -3,39 +3,6 @@
 #include "MatrixOperations.h"
 #include "MatrixUtility.h"
 
-// void matrixOperationHandler(Matrix& userMatrix)
-// {
-//     bool run = true;
-//     do
-//     {
-//         std::cout << "Enter choice:\n" << "+ for matrix addition\n" << "* for multiplication\n" << "1 for exit\n";
-//         char choice = userMatrix.getChoice();
-//         userMatrix.setChoice(choice);
-//         MatrixOperations matrixOperation;
-//         switch (choice)
-//         {
-//         case '+':
-//             userMatrix = matrixOperation.matrixAddition();
-//             userMatrix.displayMatrix("outputMatrix");
-//             break;
-            
-//             case '*':
-//             userMatrix = matrixOperation.matrixMultiplication();
-//             userMatrix.displayMatrix("outputMatrix");
-//             break;
-
-//         case '1':
-//             run = false;
-//             break;
-
-//         default:
-//             std::cout << "Invalid choice\n";
-//             break;
-//         }
-//     } 
-//     while (run);
-// }
-
 void matrixOperationHandler()
 {
     MatrixUtility utility;
@@ -74,7 +41,6 @@ void matrixOperationHandler()
 
 int main()
 {
-    // Matrix userMatrix;
     matrixOperationHandler();
     return 0;
 }

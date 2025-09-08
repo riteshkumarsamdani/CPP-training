@@ -38,17 +38,24 @@ Matrix::~Matrix()
 void Matrix::displayMatrix(const std::string& matrixName) const
 {
     int row =0;
-    std::cout << "Elements for " << matrixName << ":\n";
-    while(row < rows)
+    if(matrix == nullptr)
     {
-        int column = 0;
-        while(column < columns)
+        std::cout << matrixName << " is empty!!\n";
+    }
+    else
+    {
+        std::cout << "Elements for " << matrixName << ":\n";
+        while(row < rows)
         {
-            std::cout <<  matrix[row][column] << "  ";
-            column++;
+            int column = 0;
+            while(column < columns)
+            {
+                std::cout <<  matrix[row][column] << "  ";
+                column++;
+            }
+            std::cout << "\n";
+            row++;
         }
-        std::cout << "\n";
-        row++;
     }
 }
 
@@ -124,7 +131,9 @@ Matrix Matrix::operator+(Matrix& secondMatrix)
         while(column < columns)
         {
             outputMatrix.matrix[row][column] = matrix[row][column] + secondMatrix.matrix[row][column];
+            column++;
         }
+        row++;
     }
     return outputMatrix;
 }
