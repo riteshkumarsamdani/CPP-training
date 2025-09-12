@@ -1,8 +1,8 @@
-#include<iostream>
-#include"Input.h"
+#include <iostream>
+#include "MatrixOperation.h"
 
 int main()
 {
-    matrixCaller();
+    matrixOperations();
     return 0;
 }

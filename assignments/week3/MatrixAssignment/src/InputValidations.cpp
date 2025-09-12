@@ -1,26 +1,36 @@
 #include <iostream>
 #include <limits>
 #include <sstream>
-#include "Utils.h"
+#include "InputValidations.h"
 
-int validInt(std::string input)
+double doubleMax()
+{
+    return std::numeric_limits<double>::max();
+}
+
+int intMax()
+{
+    return std::numeric_limits<int>::max();
+}
+
+int validateDimension(const std::string& input)
 {
     int value;
     std::stringstream output(input);
     if (!(output >> value && output.eof())) 
     {
-        value = std::numeric_limits<int>::max();
+        value = intMax();
     } 
     return value;
 }
 
-double validDouble(std::string input)
+double validateElement(const std::string& input)
 {
     double value;
     std::stringstream output(input);
     if (!(output >> value && output.eof())) 
     {
-        value = std::numeric_limits<double>::max();
+        value = doubleMax();
     } 
     return value;
 }
