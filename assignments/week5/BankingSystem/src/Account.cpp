@@ -37,12 +37,13 @@ void Account::showAllTransaction()
 void Account::showMiniStatement()
 {
     int totalTransaction = transactions.size();
-    int iterator = (totalTransaction < 5) ? totalTransaction : 5;
-    while(iterator > 0)
+    int count = (totalTransaction < 5) ? totalTransaction : 5;
+    int iterator = totalTransaction - count;
+    while(iterator < totalTransaction)
     {
-        transactions[totalTransaction - iterator - 1] -> showTransactions();
+        transactions[iterator] -> showTransactions();
         std::cout << "\n";
-        iterator--;
+        iterator++;
     }
 }
 
