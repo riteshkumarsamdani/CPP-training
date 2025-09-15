@@ -51,7 +51,10 @@ void bankMenu(Bank* bank, std::vector<Admin*>& adminList)
             case 3: 
             {
                 Admin* admin = adminLogin(adminList);
-                admin -> showAdminMenu(bank -> getAllUser());
+                if(admin)
+                {
+                    admin -> showAdminMenu(bank -> getAllUser());
+                }
                 break;
             }
             case 4:
