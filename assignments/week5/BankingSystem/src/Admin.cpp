@@ -44,7 +44,7 @@ void Admin::showAllUser(std::vector<User*>& users)
     {
         User* user = users[iterator];
         std::cout << "User ID: " << user -> getUserId();
-        std::cout << ", Account No: " << user -> getAccount() -> getAccountNo();
+        std::cout << ", Account No: " << user -> getAccount() -> getAccountNumber();
         std::cout << ", Balance: " << user -> getAccount() -> getBalance() << "\n";
         iterator++;
     }
@@ -62,7 +62,7 @@ void Admin::findUserById(std::vector<User*>& users)
         User* user = users[iterator];
         if (user -> getUserId() == userId) 
         {
-            std::cout << "Found: Account No: " << user -> getAccount() -> getAccountNo();
+            std::cout << "Found: Account No: " << user -> getAccount() -> getAccountNumber();
             std::cout << ", Balance: " << user -> getAccount() -> getBalance() << "\n";
             found = true;
             break;

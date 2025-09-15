@@ -74,7 +74,7 @@ void Bank::userMenu(User* currentUser)
         userChoice = userInputChoice();
         switch (userChoice) {
             case 1:
-                std::cout << "Account Number: " << currentUser->getAccount()->getAccountNo() << "\n";
+                std::cout << "Account Number: " << currentUser->getAccount()->getAccountNumber() << "\n";
                 std::cout << "Balance: " << currentUser->getAccount()->getBalance() << "\n";
                 break;
             case 2:

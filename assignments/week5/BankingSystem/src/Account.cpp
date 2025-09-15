@@ -8,7 +8,7 @@ Account::Account(int balance, int accountNumber)
     this -> accountNumber = accountNumber;
 }
 
-int Account::getAccountNo()
+int Account::getAccountNumber()
 {
     return accountNumber;
 }

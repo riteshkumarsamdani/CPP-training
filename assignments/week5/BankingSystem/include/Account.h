@@ -11,7 +11,7 @@ private:
     std::vector<Transaction*> transactions;
 public:
     Account(int balance, int accountno);
-    int getAccountNo();
+    int getAccountNumber();
     double getBalance();
     void transact();
     void setBalance(int balance);
