@@ -7,6 +7,8 @@ class XmlParser : public IParser
 {
     public:
         std::string parse(const std::string& content) override;
+    private:
+        void formatXmlNode(tinyxml2::XMLNode* node, std::ostringstream& output, int indent);
 };
 
 #endif

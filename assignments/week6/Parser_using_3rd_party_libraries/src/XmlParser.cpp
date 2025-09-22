@@ -19,14 +19,34 @@ std::string XmlParser::parse(const std::string& content)
     if (root) 
     {
         output << "Root element: " << root->Name() << "\n";
-        for (tinyxml2::XMLElement* child = root->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) 
-        {
-            output << "  Child element: " << child->Name() << "\n";
-        }
+        formatXmlNode(root, output, 2);
     } 
     else 
     {
         output << "No root element found.\n";
     }
     return output.str();
+}
+
+void XmlParser::formatXmlNode(tinyxml2::XMLNode* node, std::ostringstream& output, int indent) 
+{
+    tinyxml2::XMLElement* element = node->ToElement();
+    if (element) 
+    {
+        std::string padding(indent, ' ');
+        output << padding << "Element: " << element->Name();
+
+        const char* text = element->GetText();
+        if (text) 
+        {
+            output << " | Value: " << text;
+        }
+        output << "\n";
+    }
+    tinyxml2::XMLNode* child = node->FirstChild();
+    while (child != nullptr) 
+    {
+        formatXmlNode(child, output, indent + 2);
+        child = child->NextSibling();
+    }
 }
