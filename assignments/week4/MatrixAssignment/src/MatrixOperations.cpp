@@ -1,47 +1,49 @@
 #include "MatrixOperations.h"
 #include <iostream>
 
-Matrix MatrixOperations::matrixAddition(MatrixUtility& utility) {
-    std::cout << "Enter number of rows and colums for first matrix:\n";
-    int firstRows = utility.getDimension();
-    int firstColumns = utility.getDimension();
-    std::cout << "Enter number of rows and columns for second matrix:\n";
-    int secondRows = utility.getDimension();
-    int secondColumns = utility.getDimension();
-    if((firstRows != secondRows) || (firstColumns != secondColumns))
-    {
-        std::cout << "Invalid dimensions! dimension of first must be equal dimension of second.\n";
-        return Matrix();
-    }
-    Matrix firstMatrix(firstRows, firstColumns);
-    Matrix secondMatrix(secondRows, secondColumns);
-    firstMatrix.setDimensions(firstRows, firstColumns);
-    secondMatrix.setDimensions(secondRows, secondColumns);
-    std::cout << "Enter elements for first matrix:\n";
-    firstMatrix.matrixInputElements(firstMatrix, "firstMatrix");
-    std::cout << "Enter elements for second matrix:\n";
-    secondMatrix.matrixInputElements(secondMatrix, "secondMatrix");
-    return firstMatrix+secondMatrix;
+Matrix MatrixOperations::createMatrix(MatrixUtility& utility) 
+{
+    int rows, columns;
+    std::cout << "Enter number of rows and columns for matrix:\n";
+    rows = utility.getDimension();
+    columns = utility.getDimension();
+    Matrix matrix(rows, columns);
+    matrix.setDimensions(rows, columns);
+    return matrix;
 }
 
-Matrix MatrixOperations::matrixMultiplication(MatrixUtility& utility) {
-    std::cout << "Enter rows and columns for first matrix:\n";
-    int firstRows = utility.getDimension();
-    int firstColumns = utility.getDimension();
-    std::cout << "Enter rows and columns for second matrix:\n";
-    int secondRows = utility.getDimension();
-    int secondColumns = utility.getDimension();
-    if (firstColumns != secondRows) {
-        std::cout << "Invalid dimensions! Columns of first must equal rows of second.\n";
-        return Matrix();
+Matrix MatrixOperations::matrixAddition(MatrixUtility& utility) 
+{
+    Matrix firstMatrix = createMatrix(utility);
+    Matrix secondMatrix = createMatrix(utility);
+    bool isValidDimension = true;
+    if (firstMatrix.getRows() == secondMatrix.getRows() && firstMatrix.getColumns() == secondMatrix.getColumns()) 
+    {
+        firstMatrix.matrixInputElements();
+        secondMatrix.matrixInputElements();
+    } 
+    else 
+    {
+        isValidDimension = false;
+        std::cout << "Invalid dimensions! Both matrices must have the same dimensions.\n";
     }
-    Matrix firstMatrix(firstRows, firstColumns);
-    Matrix secondMatrix(secondRows, secondColumns);
-    firstMatrix.setDimensions(firstRows, firstColumns);
-    secondMatrix.setDimensions(secondRows, secondColumns);
-    std::cout << "Enter elements for first matrix:\n";
-    firstMatrix.matrixInputElements(firstMatrix, "firstMatrix");
-    std::cout << "Enter elements for second matrix:\n";
-    secondMatrix.matrixInputElements(secondMatrix, "secondMatrix");
-    return firstMatrix * secondMatrix;
+    return (isValidDimension == true) ? (firstMatrix + secondMatrix) : Matrix();
+}
+
+Matrix MatrixOperations::matrixMultiplication(MatrixUtility& utility) 
+{
+    Matrix firstMatrix = createMatrix(utility);
+    Matrix secondMatrix = createMatrix(utility);
+    bool isValidDimension = true;
+    if (firstMatrix.getColumns() == secondMatrix.getRows()) 
+    {
+        firstMatrix.matrixInputElements();
+        secondMatrix.matrixInputElements();
+    } 
+    else 
+    {
+        isValidDimension = false;
+        std::cout << "Invalid dimensions! Columns of first must equal rows of second.\n";
+    }
+    return (isValidDimension == true) ? (firstMatrix * secondMatrix) : Matrix();
 }

@@ -13,7 +13,7 @@ int InputValidation::intMax()
     return std::numeric_limits<int>::max();
 }
 
-double InputValidation::validElement(const std::string& input)
+double InputValidation::validateElement(const std::string& input)
 {
     double value;
     std::stringstream output(input);
@@ -24,7 +24,7 @@ double InputValidation::validElement(const std::string& input)
     return value;
 }
 
-int InputValidation::validDimension(const std::string& input)
+int InputValidation::validateDimension(const std::string& input)
 {
     int value;
     std::stringstream output(input);

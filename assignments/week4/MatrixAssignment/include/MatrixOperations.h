@@ -4,10 +4,12 @@
 #include "Matrix.h"
 #include "MatrixUtility.h"
 
-class MatrixOperations {
-public:
-    Matrix matrixAddition(MatrixUtility& utility);
-    Matrix matrixMultiplication(MatrixUtility& utility);
+class MatrixOperations 
+{
+    public:
+        Matrix matrixAddition(MatrixUtility& utility);
+        Matrix matrixMultiplication(MatrixUtility& utility);
+        Matrix createMatrix(MatrixUtility& utility);
 };
 
 #endif

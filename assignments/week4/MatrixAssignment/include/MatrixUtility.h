@@ -5,12 +5,12 @@
 class MatrixUtility : public InputValidation
 {
     private:
-        char choice{};
+        char userChoice{};
     public:
-        char getChoice();
-        void setChoice(const char& choice);
+        char getUserChoice();
+        void setUserChoice(const char userChoice);
         int getDimension();
-        double inputElement(int row, int column, const std::string& matrixName);
+        double inputElement(int row, int column);
 };
 
 #endif

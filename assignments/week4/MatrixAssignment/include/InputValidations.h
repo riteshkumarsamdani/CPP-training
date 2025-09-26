@@ -5,8 +5,8 @@
 class InputValidation
 {
     public: 
-        int validDimension(const std::string&);
-        double validElement(const std::string&);
+        int validateDimension(const std::string&);
+        double validateElement(const std::string&);
         double doubleMax();
         int intMax();
 };

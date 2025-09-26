@@ -1,51 +1,50 @@
 #include <iostream>
 #include "MatrixUtility.h"
 
-double MatrixUtility::inputElement(int row, int column, const std::string& matrixName)
+double MatrixUtility::inputElement(int row, int column)
 {
-    std::cout << "Enter element at " << matrixName << "(" << row << ", " << column << "):\n";
-    std::string input;
-    getline(std::cin >> std::ws, input);
-    double element = validElement(input);
+    std::cout << "Enter element at " << "(" << row << ", " << column << "):\n";
+    std::string userInput;
+    getline(std::cin >> std::ws, userInput);
+    double element = validateElement(userInput);
     while(element == doubleMax())
     {
         std::cout << "Invalid input for elememt!!\n";
-        std::cout << "Enter element at " << matrixName << "(" << row << ", " << column << "):\n";
-        getline(std::cin >> std::ws, input);
-        element = validElement(input);
+        std::cout << "Enter element at " << "(" << row << ", " << column << "):\n";
+        getline(std::cin >> std::ws, userInput);
+        element = validateElement(userInput);
     }
     return element;
 }
 
 int MatrixUtility::getDimension()
 {
-    std::string input;
-    getline(std::cin >> std::ws, input);
-    int dimension = validDimension(input);
+    std::string userInput;
+    getline(std::cin >> std::ws, userInput);
+    int dimension = validateDimension(userInput);
     while(dimension == intMax() || dimension < 0)
     {
         std::cout << "Invalid input for dimension!!\n";
         std::cout << "Enter dimension\n";
-        getline(std::cin >> std::ws, input);
-        dimension = validDimension(input);
+        getline(std::cin >> std::ws, userInput);
+        dimension = validateDimension(userInput);
     }
     return dimension;
 }
 
-void MatrixUtility::setChoice(const char& choice)
+void MatrixUtility::setUserChoice(const char userChoice)
 {
-    this -> choice = choice;
+    this -> userChoice = userChoice;
 }
 
-char MatrixUtility::getChoice()
+char MatrixUtility::getUserChoice()
 {
-    std::string input;
+    std::string userInput;
     char inputChoice{};
-    getline(std::cin >> std::ws, input);
-    if(input == "+" || input == "*" || input == "1")
+    getline(std::cin >> std::ws, userInput);
+    if(userInput == "+" || userInput == "*" || userInput == "1")
     {
-        inputChoice = *input.c_str();
+        inputChoice = *userInput.c_str();
     }
     return inputChoice;
 }
-

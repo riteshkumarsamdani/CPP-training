@@ -23,7 +23,7 @@ Matrix::Matrix()
 
 Matrix::~Matrix()
 {
-    if (matrix != nullptr) 
+    if (matrix)
     {
         int row = 0;
         while(row < rows)
@@ -35,16 +35,16 @@ Matrix::~Matrix()
     }
 }
 
-void Matrix::displayMatrix(const std::string& matrixName) const
+void Matrix::displayMatrix() const
 {
-    int row =0;
-    if(matrix == nullptr)
+    int row = 0;
+    if(!matrix)
     {
-        std::cout << matrixName << " is empty!!\n";
+        std::cout << "Matrix is empty!!\n";
     }
     else
     {
-        std::cout << "Elements for " << matrixName << ":\n";
+        std::cout << "Elements for Matrix" << ":\n";
         while(row < rows)
         {
             int column = 0;
@@ -69,13 +69,13 @@ const int& Matrix::getColumns() const
     return columns;
 }
 
-void Matrix::setDimensions(int& rows,int& columns)
+void Matrix::setDimensions(int rows,int columns)
 {
     this->rows = rows;
     this->columns = columns;
 }
 
-double** Matrix::matrixInputElements(Matrix& matrix, const std::string& matrixName)
+double** Matrix::matrixInputElements()
 {
     int row = 0;
     while (row < rows)
@@ -83,45 +83,40 @@ double** Matrix::matrixInputElements(Matrix& matrix, const std::string& matrixNa
         int column = 0;
         while(column < columns)
         {
-            matrix.matrix[row][column] = inputElement(row, column, matrixName);
+            matrix[row][column] = inputElement(row, column);
             column++;
         } 
         row++;
     }
-    return matrix.matrix;   
+    return matrix;   
 }
 
 Matrix Matrix::operator*(Matrix& secondMatrix)
 {
-    int rows = this -> rows;
-    int columns = secondMatrix.columns;
-    int firstcloumns = this -> columns;
-    Matrix outputMatrix(rows, columns);
-    outputMatrix.setDimensions(rows, columns);
-    int firstRow = 0;
-    while(firstRow < rows)
+    Matrix outputMatrix(rows, secondMatrix.getColumns());
+    outputMatrix.setDimensions(rows, secondMatrix.getColumns());
+    int firstMatrixRow = 0;
+    while(firstMatrixRow < rows)
     {
-        int secondColumn = 0;
-        while(secondColumn < columns)
+        int secondMatrixColumn = 0;
+        while(secondMatrixColumn < secondMatrix.getColumns())
         {
-            int firstColumn = 0;
-            outputMatrix.matrix[firstRow][secondColumn] = 0;
-            while(firstColumn < firstcloumns)
+            int firstMatrixColumn = 0;
+            outputMatrix.matrix[firstMatrixRow][secondMatrixColumn] = 0;
+            while(firstMatrixColumn < columns)
             {
-                outputMatrix.matrix[firstRow][secondColumn] += matrix[firstRow][firstColumn] * secondMatrix.matrix[firstColumn][secondColumn];
-                firstColumn++;
+                outputMatrix.matrix[firstMatrixRow][secondMatrixColumn] += matrix[firstMatrixRow][firstMatrixColumn] * secondMatrix.matrix[firstMatrixColumn][secondMatrixColumn];
+                firstMatrixColumn++;
             }
-            secondColumn++;
+            secondMatrixColumn++;
         }
-        firstRow++;
+        firstMatrixRow++;
     }
     return outputMatrix;
 }
 
 Matrix Matrix::operator+(Matrix& secondMatrix)
 {
-    int rows = this -> rows;
-    int columns = this -> columns;
     Matrix outputMatrix(rows, columns);
     int row = 0;
     outputMatrix.setDimensions(rows, columns);

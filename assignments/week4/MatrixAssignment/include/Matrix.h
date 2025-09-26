@@ -1,4 +1,4 @@
-# include "MatrixUtility.h"
+#include "MatrixUtility.h"
 #ifndef Matrix_H
 #define Matrix_H
 
@@ -12,11 +12,11 @@ class Matrix : public MatrixUtility
         Matrix(int, int);
         ~Matrix();
         Matrix();
-        void displayMatrix(const std::string&) const;
+        void displayMatrix() const;
         const int& getRows() const;
         const int& getColumns() const;
-        void setDimensions(int& rows, int& colums);
-        double** matrixInputElements(Matrix&, const std::string& matrixName);
+        void setDimensions(int rows, int colums);
+        double** matrixInputElements();
         Matrix operator*(Matrix&);
         Matrix operator+(Matrix&);
 };
