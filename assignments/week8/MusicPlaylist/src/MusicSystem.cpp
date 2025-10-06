@@ -163,4 +163,3 @@ ISong* MusicSystem::getCurrentSong() const
         return songLibrary[currentLibraryIndex];
     return nullptr;
 }
-

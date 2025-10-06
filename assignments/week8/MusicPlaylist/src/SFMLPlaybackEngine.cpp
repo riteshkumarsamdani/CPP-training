@@ -36,4 +36,3 @@ bool SFMLPlaybackEngine::stop()
     music.stop();
     return true;
 }
-

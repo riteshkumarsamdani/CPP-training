@@ -43,4 +43,3 @@ const std::map<std::string, Playlist*>& PlaylistManager::getAllPlaylists() const
 {
     return playlists;
 }
-
