@@ -8,9 +8,10 @@ class MockPlaybackEngine : public IPlaybackEngine
 {
     public:
         MOCK_METHOD(bool, load, (const std::string&), (override));
-        MOCK_METHOD(bool, play, (), (override));
-        MOCK_METHOD(bool, pause, (), (override));
-        MOCK_METHOD(bool, stop, (), (override));
+        MOCK_METHOD(void, play, (), (override));
+        MOCK_METHOD(void, pause, (), (override));
+        MOCK_METHOD(void, stop, (), (override));
+        MOCK_METHOD(bool, isPlaying, (), (const, override));
 };
 
 #endif

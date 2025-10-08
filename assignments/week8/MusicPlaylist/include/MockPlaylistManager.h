@@ -9,8 +9,8 @@ class MockPlaylistManager : public IPlaylistManager
     public:
         MOCK_METHOD(bool, createPlaylist, (const std::string&), (override));
         MOCK_METHOD(bool, deletePlaylist, (const std::string&), (override));
-        MOCK_METHOD(Playlist*, getPlaylist, (const std::string&), (override));
-        MOCK_METHOD((const std::map<std::string, Playlist*>&), getAllPlaylists, (), (const, override));
+        MOCK_METHOD(IPlaylistNavigator*, getPlaylist, (const std::string&), (override));
+        MOCK_METHOD((const std::map<std::string, IPlaylistNavigator*>&), getAllPlaylists, (), (const, override));
 };
 
 #endif

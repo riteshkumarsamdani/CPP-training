@@ -11,8 +11,8 @@ class IPlaylistManager
         virtual ~IPlaylistManager() = default;
         virtual bool createPlaylist(const std::string& name) = 0;
         virtual bool deletePlaylist(const std::string& name) = 0;
-        virtual Playlist* getPlaylist(const std::string& name) = 0;
-        virtual const std::map<std::string, Playlist*>& getAllPlaylists() const = 0;
+        virtual IPlaylistNavigator* getPlaylist(const std::string& name) = 0;
+        virtual const std::map<std::string, IPlaylistNavigator*>& getAllPlaylists() const = 0;
 };
 
 #endif

@@ -13,9 +13,10 @@ class SFMLPlaybackEngine : public IPlaybackEngine
         SFMLPlaybackEngine();
         ~SFMLPlaybackEngine();
         bool load(const std::string& filePath) override;
-        bool play() override;
-        bool pause() override;
-        bool stop() override;
+        void play() override;
+        void pause() override;
+        void stop() override;
+        bool isPlaying() const override;
 };
 
 #endif

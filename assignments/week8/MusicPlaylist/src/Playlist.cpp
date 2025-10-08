@@ -6,28 +6,42 @@ Playlist::Playlist(const std::string& name) : name(name)
     currentIterator = songs.end();
 }
 
-const std::string& Playlist::getName() const
+const std::string& Playlist::getPlaylistName() const
 {
     return name;
 }
 
 bool Playlist::addSong(ISong* song)
 {
-    if (!song) return false;
-    songs.push_back(song);
-    if (songs.size() == 1) currentIterator = songs.begin();
-    return true;
+    bool isSongAdded = false;
+    if (song)
+    {
+        songs.push_back(song);
+        if (songs.size() == 1) currentIterator = songs.begin();
+        isSongAdded = true;
+    }
+    return isSongAdded;
 }
 
-bool Playlist::removeSong(size_t index)
+bool Playlist::removeSong(int index)
 {
-    if (index >= songs.size()) return false;
-    std::list<ISong*>::iterator it = songs.begin();
-    std::advance(it, index);
-    if (it == currentIterator) currentIterator = songs.end();
-    songs.erase(it);
-    if (!songs.empty()) currentIterator = songs.begin();
-    return true;
+    bool isSongRemoved = false;
+    if (index <= songs.size())
+    {
+        std::list<ISong*>::iterator it = songs.begin();
+        std::advance(it, index);
+        if (it == currentIterator)
+        {
+            currentIterator = songs.end();
+        }
+        songs.erase(it);
+        if (!songs.empty())
+        {
+            currentIterator = songs.begin();
+        }
+        isSongRemoved = true;
+    }
+    return isSongRemoved;
 }
 
 ISong* Playlist::getCurrentSong()
@@ -35,7 +49,7 @@ ISong* Playlist::getCurrentSong()
     return (currentIterator != songs.end()) ? *currentIterator : nullptr;
 }
 
-bool Playlist::next()
+bool Playlist::nextIterate()
 {
     bool nextSong = false;
     if (!songs.empty() || currentIterator != songs.end())
@@ -50,7 +64,7 @@ bool Playlist::next()
     return nextSong;
 }
 
-bool Playlist::previous()
+bool Playlist::previousIterate()
 {
     bool previousSong = false;
     if (!songs.empty() || currentIterator != songs.begin())
@@ -87,7 +101,7 @@ const std::list<ISong*>& Playlist::getAllSongs() const
     return songs;
 }
 
-bool Playlist::reset()
+bool Playlist::resetIterator()
 {
     bool resetList = false;
     if (!songs.empty())

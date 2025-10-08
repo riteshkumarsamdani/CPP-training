@@ -1,90 +1,102 @@
 #include "Playlist.h"
-#include "Song.h"
+#include "MockSong.h"
 #include <gtest/gtest.h>
 
 class PlaylistTest : public ::testing::Test
 {
     protected:
         Playlist playlist{"MyPlaylist"};
-        ISong* song1 = new Song("1", "Song One", "file1.wav");
-        ISong* song2 = new Song("2", "Song Two", "file2.wav");
-        ISong* song3 = new Song("3", "Song Three", "file3.wav");
+        MockSong* song1 = new MockSong();
+        MockSong* song2 = new MockSong();
+        MockSong* song3 = new MockSong();
 
-        void TearDown() override 
-        {
+        void TearDown() override {
             delete song1;
             delete song2;
             delete song3;
         }
 };
 
-TEST_F(PlaylistTest, AddSongReturnsTrueForValidSong) {
+TEST_F(PlaylistTest, AddSongForValidSongTest)
+{
     EXPECT_TRUE(playlist.addSong(song1));
 }
 
-TEST_F(PlaylistTest, AddSongReturnsFalseForNullptr) {
+TEST_F(PlaylistTest, AddSongForInvalidSongTest)
+{
     EXPECT_FALSE(playlist.addSong(nullptr));
 }
 
-TEST_F(PlaylistTest, GetCurrentSongReturnsFirstAdded) {
+TEST_F(PlaylistTest, GetCurrentSongTest)
+{
     playlist.addSong(song1);
     EXPECT_EQ(playlist.getCurrentSong(), song1);
 }
 
-TEST_F(PlaylistTest, RemoveSongReturnsTrueForValidIndex) {
+TEST_F(PlaylistTest, RemoveSongForValidIndexTest)
+{
     playlist.addSong(song1);
     EXPECT_TRUE(playlist.removeSong(0));
 }
 
-TEST_F(PlaylistTest, RemoveSongReturnsFalseForInvalidIndex) {
+TEST_F(PlaylistTest, RemoveSongForInvalidIndextest)
+{
     EXPECT_FALSE(playlist.removeSong(5));
 }
 
-TEST_F(PlaylistTest, NextReturnsTrueIfNextExists) {
+TEST_F(PlaylistTest, NextValidTest)
+{
     playlist.addSong(song1);
     playlist.addSong(song2);
-    EXPECT_TRUE(playlist.next());
+    ASSERT_TRUE(playlist.nextIterate());
     EXPECT_EQ(playlist.getCurrentSong(), song2);
 }
 
-TEST_F(PlaylistTest, NextReturnsFalseIfAtEnd) {
+TEST_F(PlaylistTest, NextForInvalidIndexTest)
+{
     playlist.addSong(song1);
-    EXPECT_FALSE(playlist.next());
+    EXPECT_FALSE(playlist.nextIterate());
 }
 
-TEST_F(PlaylistTest, PreviousReturnsTrueIfPreviousExists) {
+TEST_F(PlaylistTest, PreviousIterateForValidIndexTest)
+{
     playlist.addSong(song1);
     playlist.addSong(song2);
-    playlist.next();
-    EXPECT_TRUE(playlist.previous());
+    playlist.nextIterate();
+    ASSERT_TRUE(playlist.previousIterate());
     EXPECT_EQ(playlist.getCurrentSong(), song1);
 }
 
-TEST_F(PlaylistTest, MoveSongReturnsTrueForValidIndices) {
+TEST_F(PlaylistTest, MoveSongForValidIndexTest)
+{
     playlist.addSong(song1);
     playlist.addSong(song2);
     playlist.addSong(song3);
     EXPECT_TRUE(playlist.moveSong(0, 2));
 }
 
-TEST_F(PlaylistTest, MoveSongReturnsFalseForInvalidIndices) {
+TEST_F(PlaylistTest, MoveSongForInvalidIndexTest)
+{
     playlist.addSong(song1);
     EXPECT_FALSE(playlist.moveSong(0, 5));
 }
 
-TEST_F(PlaylistTest, ResetReturnsTrueWhenSongsExist) {
+TEST_F(PlaylistTest, ResetPlaylistTest)
+{
     playlist.addSong(song1);
     playlist.addSong(song2);
-    playlist.next();
-    EXPECT_TRUE(playlist.reset());
+    playlist.nextIterate();
+    ASSERT_TRUE(playlist.resetIterator());
     EXPECT_EQ(playlist.getCurrentSong(), song1);
 }
 
-TEST_F(PlaylistTest, ResetReturnsFalseWhenEmpty) {
-    EXPECT_FALSE(playlist.reset());
+TEST_F(PlaylistTest, ResetForEmptyPlaylistTest)
+{
+    EXPECT_FALSE(playlist.resetIterator());
 }
 
-TEST_F(PlaylistTest, GetAllSongsReturnsCorrectSize) {
+TEST_F(PlaylistTest, GetAllSongsSizeTest)
+{
     playlist.addSong(song1);
     playlist.addSong(song2);
     EXPECT_EQ(playlist.getAllSongs().size(), 2);

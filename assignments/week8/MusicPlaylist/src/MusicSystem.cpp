@@ -22,144 +22,223 @@ bool MusicSystem::deletePlaylist(const std::string& name)
 
 bool MusicSystem::addSongToPlaylist(const std::string& playlistName, ISong* song)
 {
-    Playlist* playlist = playlistManager->getPlaylist(playlistName);
-    if (!playlist || !song) return false;
-    for (ISong* existing : playlist->getAllSongs())
+    bool songAdded = false;
+    bool isExisting = false;
+    IPlaylistNavigator* playlist = playlistManager->getPlaylist(playlistName);
+    if (playlist && song)
     {
-        if (existing && existing->getId() == song->getId())
+        for (ISong* existingSong : playlist->getAllSongs())
         {
-            return false; 
+            if (existingSong->getId() == song->getId())
+            {
+                isExisting = true;
+                break;
+            }
+        }
+        if(!isExisting)
+        {
+            playlist->addSong(song);
+            songAdded = true;
         }
     }
-    return playlist->addSong(song);
+    return songAdded;
 }
 
 bool MusicSystem::removeSongFromPlaylist(const std::string& playlistName, int index)
 {
-    Playlist* playlist = playlistManager->getPlaylist(playlistName);
+    IPlaylistNavigator* playlist = playlistManager->getPlaylist(playlistName);
     return playlist ? playlist->removeSong(index) : false;
 }
 
 bool MusicSystem::moveSongToPosition(const std::string& playlistName, int fromIndex, int toIndex)
 {
-    Playlist* playlist = playlistManager->getPlaylist(playlistName);
+    IPlaylistNavigator* playlist = playlistManager->getPlaylist(playlistName);
     return playlist ? playlist->moveSong(fromIndex, toIndex) : false;
 }
 
 
-Playlist* MusicSystem::getPlaylist(const std::string& name)
+IPlaylistNavigator* MusicSystem::getPlaylist(const std::string& name)
 {
     return playlistManager->getPlaylist(name);
 }
 
-const std::map<std::string, Playlist*>& MusicSystem::getAllPlaylists() const
+const std::map<std::string, IPlaylistNavigator*>& MusicSystem::getAllPlaylists() const
 {
     return playlistManager->getAllPlaylists();
 }
 
 bool MusicSystem::selectPlaylist(const std::string& name, int startIndex)
 {
-    Playlist* playlist = playlistManager->getPlaylist(name);
-    if (!playlist) return false;
-
-    const auto& songs = playlist->getAllSongs();
-    if (startIndex < 0 || static_cast<size_t>(startIndex) >= songs.size()) return false;
-
-    auto it = songs.begin();
-    std::advance(it, startIndex);
-    playlist->reset();
-    for (int i = 0; i < startIndex; ++i) playlist->next();
-
-    currentPlaylist = playlist;
-    ISong* song = currentPlaylist->getCurrentSong();
-    return song && playbackEngine->load(song->getFilePath()) && playbackEngine->play();
+    bool success = false;
+    IPlaylistNavigator* playlist = playlistManager->getPlaylist(name);
+    if (playlist)
+    {
+        const auto& songs = playlist->getAllSongs();
+        if (startIndex >= 0 && (startIndex < songs.size()))
+        {
+            playlist->resetIterator();
+            int iterate = 0;
+            while(iterate < startIndex)
+            {
+                playlist->nextIterate();
+                iterate++;
+            }
+            currentPlaylist = playlist;
+            ISong* song = currentPlaylist->getCurrentSong();
+            if (song && playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                success = true;
+            }
+        }
+    }
+    return success;
 }
 
-bool MusicSystem::play()
+
+bool MusicSystem::playSong()
 {
-    return playbackEngine->play();
+    bool isPlay = false;
+    if(!playbackEngine->isPlaying())
+    {
+        playbackEngine->play();
+        isPlay = true;
+    }
+    return isPlay;
 }
 
-bool MusicSystem::pause()
+bool MusicSystem::pauseSong()
 {
-    return playbackEngine->pause();
+    bool isPaused = false;
+    if(playbackEngine->isPlaying())
+    {
+        playbackEngine->pause();
+        isPaused = true;
+    }
+    return isPaused;
 }
 
-bool MusicSystem::stop()
+bool MusicSystem::stopSong()
 {
-    return playbackEngine->stop();
+    bool isStopped = false;
+    if(playbackEngine->isPlaying())
+    {
+        playbackEngine->stop();
+        isStopped = true;
+    }
+    return isStopped;
 }
 
 bool MusicSystem::playSong(ISong* song)
 {
-    if (!song) return false;
-    auto it = std::find(songLibrary.begin(), songLibrary.end(), song);
-    if (it == songLibrary.end()) return false;
-
-    currentPlaylist = nullptr;
-    isLibraryMode = true;
-    currentLibraryIndex = std::distance(songLibrary.begin(), it);
-    return playbackEngine->load(song->getFilePath()) && playbackEngine->play();
+    bool isSongPlayed = false;
+    if (song)
+    {
+        auto it = std::find(songLibrary.begin(), songLibrary.end(), song);
+        if (it != songLibrary.end())
+        {
+            currentPlaylist = nullptr;
+            isLibraryMode = true;
+            currentLibraryIndex = std::distance(songLibrary.begin(), it);
+            if(playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                isSongPlayed = true;
+            }
+        }
+    }
+    return isSongPlayed;
 }
 
-bool MusicSystem::next()
+bool MusicSystem::playNextSong()
 {
+    bool playNext = false;
     if (currentPlaylist)
     {
-        if (!currentPlaylist->next()) return false;
-        ISong* song = currentPlaylist->getCurrentSong();
-        return song && playbackEngine->load(song->getFilePath()) && playbackEngine->play();
+        if (currentPlaylist->nextIterate())
+        {
+            ISong* song = currentPlaylist->getCurrentSong();
+            if(song && playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                playNext = true;
+            }
+        }
     } 
     else if (isLibraryMode)
     {
-        if (currentLibraryIndex + 1 >= static_cast<int>(songLibrary.size())) return false;
-        currentLibraryIndex++;
-        ISong* song = songLibrary[currentLibraryIndex];
-        return playbackEngine->load(song->getFilePath()) && playbackEngine->play();
+        if (currentLibraryIndex + 1 < songLibrary.size())
+        {
+            currentLibraryIndex++;
+            ISong* song = songLibrary[currentLibraryIndex];
+            if(playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                playNext = true;
+            }
+        }
     }
-    return false;
+    return playNext;
 }
 
-bool MusicSystem::previous()
+bool MusicSystem::playPreviousSong()
 {
+    bool playPrevious;
     if (currentPlaylist)
     {
-        if (!currentPlaylist->previous()) return false;
-        ISong* song = currentPlaylist->getCurrentSong();
-        return song && playbackEngine->load(song->getFilePath()) && playbackEngine->play();
+        if (currentPlaylist->previousIterate())
+        {
+            ISong* song = currentPlaylist->getCurrentSong();
+            if(song && playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                playPrevious = true;
+            }
+        }
     } 
     else if (isLibraryMode)
     {
-        if (currentLibraryIndex <= 0) return false;
-        currentLibraryIndex--;
-        ISong* song = songLibrary[currentLibraryIndex];
-        return playbackEngine->load(song->getFilePath()) && playbackEngine->play();
+        if (currentLibraryIndex > 0)
+        {
+            currentLibraryIndex--;
+            ISong* song = songLibrary[currentLibraryIndex];
+            if(playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                playPrevious = true;
+            }
+        }
     }
-    return false;
+    return playPrevious;
 }
 
 bool MusicSystem::reset()
 {
+    bool resetSuccess = false;
     if (currentPlaylist)
     {
-        if (!currentPlaylist->reset()) return false;
-        ISong* song = currentPlaylist->getCurrentSong();
-        return song && playbackEngine->load(song->getFilePath()) && playbackEngine->play();
-    } 
+        if (currentPlaylist->resetIterator())
+        {
+            ISong* song = currentPlaylist->getCurrentSong();
+            if (song && playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                resetSuccess = true;
+            }
+        }
+    }
     else if (isLibraryMode)
     {
-        if (songLibrary.empty()) return false;
-        currentLibraryIndex = 0;
-        ISong* song = songLibrary[currentLibraryIndex];
-        return playbackEngine->load(song->getFilePath()) && playbackEngine->play();
+        if (!songLibrary.empty())
+        {
+            currentLibraryIndex = 0;
+            ISong* song = songLibrary[currentLibraryIndex];
+            if (playbackEngine->load(song->getFilePath()))
+            {
+                playbackEngine->play();
+                resetSuccess = true;
+            }
+        }
     }
-    return false;
-}
-
-ISong* MusicSystem::getCurrentSong() const
-{
-    if (currentPlaylist) return currentPlaylist->getCurrentSong();
-    if (isLibraryMode && currentLibraryIndex >= 0 && currentLibraryIndex < static_cast<int>(songLibrary.size()))
-        return songLibrary[currentLibraryIndex];
-    return nullptr;
+    return resetSuccess;
 }

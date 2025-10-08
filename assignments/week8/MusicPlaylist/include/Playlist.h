@@ -14,17 +14,16 @@ class Playlist : public IPlaylistNavigator
         std::list<ISong*>::iterator currentIterator;
 
     public:
-        explicit Playlist(const std::string& name);
-        const std::string& getName() const;
-        bool addSong(ISong* song);
-        bool removeSong(size_t index);
-        ISong* getSongAt(int index) const;
+        Playlist(const std::string& name);
+        const std::string& getPlaylistName() const override;
+        bool addSong(ISong* song) override;
+        bool removeSong(int index) override;
         ISong* getCurrentSong() override;
-        bool next() override;
-        bool previous() override;
+        bool nextIterate() override;
+        bool previousIterate() override;
         bool moveSong(int fromIndex, int toIndex) override;
-        const std::list<ISong*>& getAllSongs() const;
-        bool reset() override;
+        const std::list<ISong*>& getAllSongs() const override;
+        bool resetIterator() override;
 };
 
 #endif

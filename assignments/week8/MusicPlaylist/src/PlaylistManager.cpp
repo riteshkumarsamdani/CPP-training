@@ -33,13 +33,13 @@ bool PlaylistManager::deletePlaylist(const std::string& name)
     return isDeleted;
 }
 
-Playlist* PlaylistManager::getPlaylist(const std::string& name)
+IPlaylistNavigator* PlaylistManager::getPlaylist(const std::string& name)
 {
     auto it = playlists.find(name);
     return (it != playlists.end()) ? it->second : nullptr;
 }
 
-const std::map<std::string, Playlist*>& PlaylistManager::getAllPlaylists() const
+const std::map<std::string, IPlaylistNavigator*>& PlaylistManager::getAllPlaylists() const
 {
     return playlists;
 }

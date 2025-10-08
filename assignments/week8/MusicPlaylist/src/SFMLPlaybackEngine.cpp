@@ -9,30 +9,22 @@ bool SFMLPlaybackEngine::load(const std::string& filePath)
     return music.openFromFile(filePath);
 }
 
-bool SFMLPlaybackEngine::play()
+void SFMLPlaybackEngine::play()
 {
-    bool playMusic = false;
-    if (music.getStatus() != sf::SoundSource::Status::Playing)
-    {
-        music.play();
-        playMusic = true;
-    }
-    return playMusic;
+    music.play();
 }
 
-bool SFMLPlaybackEngine::pause()
+void SFMLPlaybackEngine::pause()
 {
-    bool isPaused = false;
-    if (music.getStatus() == sf::SoundSource::Status::Playing)
-    {
-        music.pause();
-        isPaused= true;
-    }
-    return isPaused;
+    music.pause();
 }
 
-bool SFMLPlaybackEngine::stop()
+void SFMLPlaybackEngine::stop()
 {
     music.stop();
-    return true;
+}
+
+bool SFMLPlaybackEngine::isPlaying() const
+{
+    return music.getStatus() == sf::SoundSource::Status::Playing;
 }

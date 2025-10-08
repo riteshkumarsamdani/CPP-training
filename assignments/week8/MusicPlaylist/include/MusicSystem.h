@@ -3,12 +3,13 @@
 
 #include "IMusicSystem.h"
 
-class MusicSystem : public IMusicSystem {
+class MusicSystem : public IMusicSystem 
+{
     private:
         IPlaybackEngine* playbackEngine;
         IPlaylistManager* playlistManager;
         std::vector<ISong*> songLibrary;
-        Playlist* currentPlaylist;
+        IPlaylistNavigator* currentPlaylist;
         bool isLibraryMode = false;
         int currentLibraryIndex = -1;
 
@@ -20,17 +21,16 @@ class MusicSystem : public IMusicSystem {
         bool addSongToPlaylist(const std::string& playlistName, ISong* song) override;
         bool removeSongFromPlaylist(const std::string& playlistName, int index) override;
         bool moveSongToPosition(const std::string& playlistName, int fromIndex, int toIndex) override;
-        Playlist* getPlaylist(const std::string& name) override;
-        const std::map<std::string, Playlist*>& getAllPlaylists() const override;
+        IPlaylistNavigator* getPlaylist(const std::string& name) override;
+        const std::map<std::string, IPlaylistNavigator*>& getAllPlaylists() const override;
         bool playSong(ISong* song) override;
         bool selectPlaylist(const std::string& name, int startIndex) override;
-        bool play() override;
-        bool pause() override;
-        bool stop() override;
-        bool next() override;
-        bool previous() override;
+        bool playSong() override;
+        bool pauseSong() override;
+        bool stopSong() override;
+        bool playNextSong() override;
+        bool playPreviousSong() override;
         bool reset() override;
-        ISong* getCurrentSong() const override;
 };
 
 #endif

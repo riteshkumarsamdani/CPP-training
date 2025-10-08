@@ -6,59 +6,70 @@
 #include <iostream>
 
 void showMainMenu();
-void handleViewSongs(IMusicSystem& system);
+void displaySongs(IMusicSystem& system);
 void handleCreatePlaylist(IMusicSystem& system, InputHandler& input);
-void handleManagePlaylists(IMusicSystem& system, InputHandler& input);
-void handlePlaybackControl(IMusicSystem& system, InputHandler& input);
+void playlistOperationHandler(IMusicSystem& system, InputHandler& input);
+void playbackControlHandler(IMusicSystem& system, InputHandler& input);
+void createSongLibrary(std::vector<ISong*>& songLibrary);
 
 int main() 
 {
-    std::vector<ISong*> songLibrary = 
-    {
-        new Song("1", "Song One", "Music/blues.00000.wav"),
-        new Song("2", "Song Two", "Music/blues.00001.wav"),
-        new Song("3", "Song Three", "Music/blues.00002.wav")
-    };
-
+    std::vector<ISong*> songLibrary;
+    createSongLibrary(songLibrary);
     IPlaybackEngine* playbackEngine = new SFMLPlaybackEngine();
     IPlaylistManager* playlistManager = new PlaylistManager();
     MusicSystem system(playbackEngine, playlistManager, songLibrary);
-
     InputHandler input;
     int choice;
     do {
         showMainMenu();
         input.getUserInput("Enter your choice: ", choice);
-    
-        switch (choice) {
-            case 1: handleViewSongs(system); break;
-            case 2: handleCreatePlaylist(system, input); break;
-            case 3: handleManagePlaylists(system, input); break;
-            case 4: handlePlaybackControl(system, input); break;
-            case 5: std::cout << "Exiting...\n"; break;
-            default: std::cout << "Invalid option.\n"; break;
+        switch (choice) 
+        {
+            case 1:
+                displaySongs(system); 
+                break;
+            case 2:
+                handleCreatePlaylist(system, input); 
+                break;
+            case 3:
+                playlistOperationHandler(system, input); 
+                break;
+            case 4:
+                playbackControlHandler(system, input); 
+                break;
+            case 0:
+                std::cout << "Exiting...\n";
+                break;
+            default: 
+                std::cout << "Invalid option.\n"; 
+                break;
         }
     } 
-    while (choice != 5);
+    while (choice != 0);
     for (ISong* song : songLibrary) delete song;
     return 0;
 }
 
-void showMainMenu() {
+void showMainMenu()
+{
     std::cout << "\n=== Music System Menu ===\n";
     std::cout << "1. View All Songs\n";
     std::cout << "2. Create Playlist\n";
     std::cout << "3. Manage Playlists\n";
     std::cout << "4. Playback Control\n";
-    std::cout << "5. Exit\n";
-    std::cout << "Enter your choice: ";
+    std::cout << "0. Exit\n";
 }
 
-void handleViewSongs(IMusicSystem& system) {
+void displaySongs(IMusicSystem& system)
+{
     const auto& songs = system.getAllSongs();
     std::cout << "\n--- All Songs ---\n";
-    for (int i = 0; i < songs.size(); ++i) {
-        std::cout << i << ". " << songs[i]->getTitle() << "\n";
+    int index = 0;
+    while(index < songs.size())
+    {
+        std::cout << index << ". " << songs[index]->getTitle() << "\n";
+        index++;
     }
 }
 
@@ -83,28 +94,35 @@ void displayPlaylistMenu()
     std::cout << "6. Move Song Up/Down\n";
     std::cout << "0. Back to Main Menu\n";
 }
-void handleManagePlaylists(IMusicSystem& system, InputHandler& input) {
+
+void playlistOperationHandler(IMusicSystem& system, InputHandler& input)
+{
     bool back = false;
-    while (!back) {
+    while (!back) 
+    {
         int option;
         displayPlaylistMenu();
         input.getUserInput("Enter option: ", option);
-
         std::string name;
-        switch (option) {
-            case 1: {
+        switch (option) 
+        {
+            case 1: 
+            {
                 const auto& playlists = system.getAllPlaylists();
-                for (const auto& [name, pl] : playlists)
+                for (const auto& [name, playlist] : playlists)
                     std::cout << "- " << name << "\n";
                 break;
             }
             case 2:
+            {
                 input.getUserInput("Enter playlist name to delete: ", name);
                 std::cout << (system.deletePlaylist(name) ? "Deleted.\n" : "Not found.\n");
                 break;
-            case 3: {
+            }
+            case 3: 
+            {
                 input.getUserInput("Enter playlist name: ", name);
-                handleViewSongs(system);
+                displaySongs(system);
                 int songIndex;
                 input.getUserInput("Enter song index to add: ", songIndex);
                 const auto& songs = system.getAllSongs();
@@ -115,17 +133,20 @@ void handleManagePlaylists(IMusicSystem& system, InputHandler& input) {
                 break;
             }
             case 4:
+            {
                 input.getUserInput("Enter playlist name: ", name);
                 int index;
                 input.getUserInput("Enter song index to remove: ", index);
                 std::cout << (system.removeSongFromPlaylist(name, index) ? "Removed.\n" : "Failed.\n");
                 break;
-            case 5: {
+            }
+            case 5: 
+            {
                 input.getUserInput("Enter playlist name: ", name);
-                Playlist* pl = system.getPlaylist(name);
-                if (!pl) break;
+                IPlaylistNavigator* playlist = system.getPlaylist(name);
+                if (!playlist) break;
                 int i = 0;
-                for (ISong* song : pl->getAllSongs())
+                for (ISong* song : playlist->getAllSongs())
                     std::cout << i++ << ". " << song->getTitle() << "\n";
                 break;
             }
@@ -144,7 +165,7 @@ void handleManagePlaylists(IMusicSystem& system, InputHandler& input) {
     }
 }
 
-void displaySubPlaybackMenu()
+void displayPlaybackMenu()
 {
     std::cout << "\n--- Playback Controls ---\n";
     std::cout << "1. Play\n";
@@ -156,20 +177,20 @@ void displaySubPlaybackMenu()
     std::cout << "0. Back to Playback Menu\n";
 }
 
-void playbackSubMenu(IMusicSystem& system, InputHandler& input)
+void playbackHandler(IMusicSystem& system, InputHandler& input)
 {
     bool back = false;
     while (!back) {
         int option;
-        displaySubPlaybackMenu();
+        displayPlaybackMenu();
         input.getUserInput("Enter option: ", option);
 
         switch (option) {
-            case 1: std::cout << (system.play() ? "Playing.\n" : "Failed.\n"); break;
-            case 2: std::cout << (system.pause() ? "Paused.\n" : "Failed.\n"); break;
-            case 3: std::cout << (system.stop() ? "Stopped.\n" : "Failed.\n"); break;
-            case 4: std::cout << (system.next() ? "Next song.\n" : "Failed.\n"); break;
-            case 5: std::cout << (system.previous() ? "Previous song.\n" : "Failed.\n"); break;
+            case 1: std::cout << (system.playSong() ? "Playing.\n" : "Failed.\n"); break;
+            case 2: std::cout << (system.pauseSong() ? "Paused.\n" : "Failed.\n"); break;
+            case 3: std::cout << (system.stopSong() ? "Stopped.\n" : "Failed.\n"); break;
+            case 4: std::cout << (system.playNextSong() ? "Next song.\n" : "Failed.\n"); break;
+            case 5: std::cout << (system.playPreviousSong() ? "Previous song.\n" : "Failed.\n"); break;
             case 6: std::cout << (system.reset() ? "Reset.\n" : "Failed.\n"); break;
             case 0: back = true; break;
             default: std::cout << "Invalid option.\n";
@@ -177,49 +198,87 @@ void playbackSubMenu(IMusicSystem& system, InputHandler& input)
     }
 }
 
-void handlePlaybackControl(IMusicSystem& system, InputHandler& input)
+void displayPlaybackControlMenu()
+{
+    std::cout << "\n--- Playback Control ---\n";
+    std::cout << "1. Play Song from Library\n";
+    std::cout << "2. Select & Play Playlist\n";
+    std::cout << "0. Back to Main Menu\n";
+}
+
+void libraryPlaybackHandler(IMusicSystem& system, InputHandler& input)
+{
+    int index;
+    displaySongs(system);
+    input.getUserInput("Enter song index to play: ", index);
+    const auto& songs = system.getAllSongs();
+    if (index >= 0 && index < songs.size()) 
+    {
+        ISong* song = songs[index];
+        if (song && system.playSong(song)) 
+        {
+            std::cout << "Playing: " << song->getTitle() << "\n";
+            playbackHandler(system, input);
+        } 
+        else 
+        {
+            std::cout << "Failed to play song.\n";
+        }
+    } 
+    else 
+    {
+        std::cout << "Invalid index.\n";
+    }
+}
+
+void playFromPlaylistHandler(IMusicSystem& system, InputHandler& input)
+{
+    int index;
+    std::string name;
+    input.getUserInput("Enter playlist name: ", name);
+    input.getUserInput("Enter song index to start: ", index);
+    if (system.selectPlaylist(name, index)) {
+        std::cout << "Playing...\n";
+        playbackHandler(system, input);
+    } 
+    else 
+    {
+        std::cout << "Failed to play from playlist.\n";
+    }
+}
+
+void playbackControlHandler(IMusicSystem& system, InputHandler& input)
 {
     bool back = false;
     while (!back) {
         int option;
-        std::cout << "\n--- Playback Control ---\n";
-        std::cout << "1. Play Song from Library\n";
-        std::cout << "2. Select & Play Playlist\n";
-        std::cout << "0. Back to Main Menu\n";
+        displayPlaybackControlMenu();
         input.getUserInput("Enter option: ", option);
-        std::string name;
-        int index;
         switch (option) {
-            case 1: {
-                handleViewSongs(system);
-                input.getUserInput("Enter song index to play: ", index);
-                const auto& songs = system.getAllSongs();
-                if (index >= 0 && index < songs.size()) {
-                    ISong* song = songs[index];
-                    if (song && system.playSong(song)) {
-                        std::cout << "Playing: " << song->getTitle() << "\n";
-                        playbackSubMenu(system, input);
-                    } else {
-                        std::cout << "Failed to play song.\n";
-                    }
-                } else {
-                    std::cout << "Invalid index.\n";
-                }
+            case 1: 
+            {
+                libraryPlaybackHandler(system, input);
                 break;
             }
-            case 2: {
-                input.getUserInput("Enter playlist name: ", name);
-                input.getUserInput("Enter song index to start: ", index);
-                if (system.selectPlaylist(name, index)) {
-                    std::cout << "Playing...\n";
-                    playbackSubMenu(system, input);
-                } else {
-                    std::cout << "Failed to play from playlist.\n";
-                }
+            case 2: 
+            {
+                playFromPlaylistHandler(system, input);
                 break;
             }
             case 0: back = true; break;
             default: std::cout << "Invalid option.\n";
         }
     }
+}
+
+void createSongLibrary(std::vector<ISong*>& songLibrary)
+{
+    songLibrary.push_back(new Song("1", "blues1", "Music/blues.00000.wav"));
+    songLibrary.push_back(new Song("2", "blues2", "Music/blues.00001.wav"));
+    songLibrary.push_back(new Song("3", "blues3", "Music/blues.00002.wav"));
+    songLibrary.push_back(new Song("4", "classical1", "Music/classical.0000.wav"));
+    songLibrary.push_back(new Song("5", "classical2", "Music/classical.00001.wav"));
+    songLibrary.push_back(new Song("6", "classical3", "Music/classical.00002.wav"));
+    songLibrary.push_back(new Song("7", "rock1", "Music/rock.00000.wav"));
+    songLibrary.push_back(new Song("8", "rock2", "Music/rock.00001.wav"));
 }

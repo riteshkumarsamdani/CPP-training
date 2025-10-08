@@ -1,116 +1,48 @@
-#include "Playlist.h"
-#include "MockSong.h"
+#include "PlaylistManager.h"
 #include <gtest/gtest.h>
 
-class PlaylistTest : public ::testing::Test 
+class PlaylistManagerTest : public ::testing::Test
 {
     protected:
-        Playlist playlist{"MockPlaylist"};
-        MockSong* song1 = new MockSong();
-        MockSong* song2 = new MockSong();
-        MockSong* song3 = new MockSong();
-
-        void SetUp() override 
-        {
-            ON_CALL(*song1, getId()).WillByDefault(::testing::Return("1"));
-            ON_CALL(*song2, getId()).WillByDefault(::testing::Return("2"));
-            ON_CALL(*song3, getId()).WillByDefault(::testing::Return("3"));
-        }
-
-        void TearDown() override 
-        {
-            delete song1;
-            delete song2;
-            delete song3;
-        }
+        PlaylistManager manager;
 };
 
-TEST_F(PlaylistTest, GetNameTest) 
+TEST_F(PlaylistManagerTest, CreateNewPlaylistTest)
 {
-    EXPECT_EQ(playlist.getName(), "MockPlaylist");
+    EXPECT_TRUE(manager.createPlaylist("Rock"));
 }
 
-TEST_F(PlaylistTest, AddSongTest) 
+TEST_F(PlaylistManagerTest, CreateDuplicatePlaylistTest)
 {
-    EXPECT_TRUE(playlist.addSong(song1));
+    manager.createPlaylist("Jazz");
+    EXPECT_FALSE(manager.createPlaylist("Jazz"));
 }
 
-TEST_F(PlaylistTest, AddSongForNullptrTest) 
+TEST_F(PlaylistManagerTest, DeleteExistingPlaylistTest)
 {
-    EXPECT_FALSE(playlist.addSong(nullptr));
+    manager.createPlaylist("Pop");
+    EXPECT_TRUE(manager.deletePlaylist("Pop"));
 }
 
-TEST_F(PlaylistTest, GetCurrentSongTest) 
+TEST_F(PlaylistManagerTest, DeleteNonexistentPlaylistTest)
 {
-    playlist.addSong(song1);
-    EXPECT_EQ(playlist.getCurrentSong(), song1);
+    EXPECT_FALSE(manager.deletePlaylist("Classical"));
 }
 
-TEST_F(PlaylistTest, RemoveSongForValidIndexTest) 
+TEST_F(PlaylistManagerTest, GetExistingPlaylistTest)
 {
-    playlist.addSong(song1);
-    EXPECT_TRUE(playlist.removeSong(0));
+    manager.createPlaylist("HipHop");
+    EXPECT_NE(manager.getPlaylist("HipHop"), nullptr);
 }
 
-TEST_F(PlaylistTest, RemoveSongForInvalidTest) 
+TEST_F(PlaylistManagerTest, GetNonexistentPlaylistTest)
 {
-    EXPECT_FALSE(playlist.removeSong(5));
+    EXPECT_EQ(manager.getPlaylist("Rock"), nullptr);
 }
 
-TEST_F(PlaylistTest, NextTest) 
+TEST_F(PlaylistManagerTest, AllPlaylistsContainsCreatedPlaylistTest)
 {
-    playlist.addSong(song1);
-    playlist.addSong(song2);
-    EXPECT_TRUE(playlist.next());
-    EXPECT_EQ(playlist.getCurrentSong(), song2);
-}
-
-TEST_F(PlaylistTest, NextAtEndTest) 
-{
-    playlist.addSong(song1);
-    EXPECT_FALSE(playlist.next());
-}
-
-TEST_F(PlaylistTest, PreviousTest) 
-{
-    playlist.addSong(song1);
-    playlist.addSong(song2);
-    playlist.next();
-    EXPECT_TRUE(playlist.previous());
-    EXPECT_EQ(playlist.getCurrentSong(), song1);
-}
-
-TEST_F(PlaylistTest, MoveSongForValidTest) 
-{
-    playlist.addSong(song1);
-    playlist.addSong(song2);
-    playlist.addSong(song3);
-    EXPECT_TRUE(playlist.moveSong(0, 2));
-}
-
-TEST_F(PlaylistTest, MoveSongForInvalidTest) 
-{
-    playlist.addSong(song1);
-    EXPECT_FALSE(playlist.moveSong(0, 5));
-}
-
-TEST_F(PlaylistTest, ResetTest) 
-{
-    playlist.addSong(song1);
-    playlist.addSong(song2);
-    playlist.next();
-    EXPECT_TRUE(playlist.reset());
-    EXPECT_EQ(playlist.getCurrentSong(), song1);
-}
-
-TEST_F(PlaylistTest, ResetForEmptyTest) 
-{
-    EXPECT_FALSE(playlist.reset());
-}
-
-TEST_F(PlaylistTest, GetAllSongsTest) 
-{
-    playlist.addSong(song1);
-    playlist.addSong(song2);
-    EXPECT_EQ(playlist.getAllSongs().size(), 2);
+    manager.createPlaylist("Rock");
+    auto& all = manager.getAllPlaylists();
+    EXPECT_NE(all.find("Rock"), all.end());
 }
