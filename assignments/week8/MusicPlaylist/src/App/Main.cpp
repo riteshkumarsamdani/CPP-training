@@ -48,6 +48,8 @@ int main()
     } 
     while (choice != 0);
     for (ISong* song : songLibrary) delete song;
+    delete playbackEngine;
+    delete playlistManager;
     return 0;
 }
 
