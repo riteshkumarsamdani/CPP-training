@@ -147,9 +147,9 @@ void playlistOperationHandler(IMusicSystem& system, InputHandler& input)
                 input.getUserInput("Enter playlist name: ", name);
                 IPlaylistNavigator* playlist = system.getPlaylist(name);
                 if (!playlist) break;
-                int i = 0;
+                int iterator = 0;
                 for (ISong* song : playlist->getAllSongs())
-                    std::cout << i++ << ". " << song->getTitle() << "\n";
+                    std::cout << iterator++ << ". " << song->getTitle() << "\n";
                 break;
             }
             case 6:
