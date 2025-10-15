@@ -19,7 +19,6 @@ class TrafficSystem
         std::vector<std::thread> laneThreads;
     public:
         TrafficSystem();
-        void initialize();
         ~TrafficSystem();
         bool assignVehicleToLane(const std::string& laneName, const std::string& vehicleId, const std::string& direction);
         bool waitUntilProcessed(const std::string& laneName); 

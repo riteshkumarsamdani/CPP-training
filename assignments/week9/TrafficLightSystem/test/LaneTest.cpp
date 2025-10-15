@@ -8,32 +8,28 @@
 
 class LaneTest : public ::testing::Test 
 {
-protected:
-    SharedState* shared;
-    MockLogger* logger;
-    Lane* lane;
-
-    void SetUp() override 
-    {
-        shared = new SharedState();
-        logger = new MockLogger();
-        lane = new Lane("North", shared, logger);
-    }
-
-    void TearDown() override 
-    {
-        delete lane;
-        delete logger;
-        delete shared;
-    }
+    protected:
+        SharedState shared;
+        MockLogger logger;
+        Lane* lane;
+    
+        void SetUp() override 
+        {
+            lane = new Lane("North", &shared, &logger);
+        }
+    
+        void TearDown() override 
+        {
+            delete lane;
+        }
 };
 
 TEST_F(LaneTest, Given_LeftDirection_When_ProcessVehicleCalled_Then_LogsTurnAndReturnsTrue)
 {
     std::string vehicleId = "vehicle1";
     std::string direction = "left";
-    EXPECT_CALL(*logger, log("Car vehicle1 from North turns LEFT"));
-    EXPECT_CALL(*logger, log("Car vehicle1 from North passed"));
+    EXPECT_CALL(logger, log("Car vehicle1 from North turns LEFT"));
+    EXPECT_CALL(logger, log("Car vehicle1 from North passed"));
 
     bool result = lane->processVehicle(vehicleId, direction);
 
@@ -44,9 +40,9 @@ TEST_F(LaneTest, Given_StraightDirectionAndGreenSignal_When_ProcessVehicleCalled
 {
     std::string vehicleId = "vehicle2";
     std::string direction = "straight";
-    shared->currentGreenLane = "North";
-    EXPECT_CALL(*logger, log("Car vehicle2 from North going straight proceeds"));
-    EXPECT_CALL(*logger, log("Car vehicle2 from North passed"));
+    shared.currentGreenLane = "North";
+    EXPECT_CALL(logger, log("Car vehicle2 from North going straight proceeds"));
+    EXPECT_CALL(logger, log("Car vehicle2 from North passed"));
 
     bool result = lane->processVehicle(vehicleId, direction);
 
@@ -90,8 +86,8 @@ TEST_F(LaneTest, Given_AssignedVehicle_When_RunCalledInThread_Then_ProcessesVehi
 {
     std::string vehicleId = "vehicle5";
     std::string direction = "left";
-    EXPECT_CALL(*logger, log("Car vehicle5 from North turns LEFT"));
-    EXPECT_CALL(*logger, log("Car vehicle5 from North passed"));
+    EXPECT_CALL(logger, log("Car vehicle5 from North turns LEFT"));
+    EXPECT_CALL(logger, log("Car vehicle5 from North passed"));
 
     std::thread laneThread([&]() {
         lane->run();

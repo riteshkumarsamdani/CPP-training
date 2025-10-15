@@ -1,9 +1,7 @@
 #include "TrafficSystem.h"
 #include "Logger.h"
 
-TrafficSystem::TrafficSystem() : shared(nullptr), logger(nullptr), controller(nullptr) {}
-
-void TrafficSystem::initialize()
+TrafficSystem::TrafficSystem()
 {
     shared = new SharedState();
     logger = new Logger();

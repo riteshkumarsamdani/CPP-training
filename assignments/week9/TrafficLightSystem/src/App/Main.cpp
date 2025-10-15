@@ -73,7 +73,6 @@ std::string getUserDirection(InputHandler& input)
 int main()
 {
     TrafficSystem system;
-    system.initialize();
     InputHandler input;
     int vehicleCounter = 1;
     while (true)
