@@ -4,7 +4,15 @@
 TrafficSystem::TrafficSystem(TrafficSignal* signal, ILogger* logger, ITrafficLightController* controller, std::unordered_map<std::string, ILane*> lanes)
     : signal(signal), logger(logger), controller(controller), lanes(lanes)
 {
-    controllerThread = std::thread([controller]() { controller->start(); });
+    try
+    {
+        controllerThread = std::thread([controller]() { controller->start(); });
+    }
+    catch (const std::system_error& e)
+    {
+        logger->log("Thread creation failed: " + std::string(e.what()));
+    }
+    
 }
 
 bool TrafficSystem::processRequest(const std::string& laneName, const std::string& direction)
