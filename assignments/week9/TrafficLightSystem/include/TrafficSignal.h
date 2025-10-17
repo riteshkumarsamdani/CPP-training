@@ -1,15 +1,16 @@
-#ifndef SHARED_STATE_H
-#define SHARED_STATE_H
+#ifndef TRAFFIC_SIGNAL_H
+#define TRAFFIC_SIGNAL_H
 
 #include <string>
 #include <mutex>
 #include <condition_variable>
 
-struct SharedState 
+struct TrafficSignal
 {
+    
     std::string currentGreenLane;
     std::mutex laneMutex;
-    std::condition_variable cv;
+    std::condition_variable signalChangeCV;
 };
 
 #endif

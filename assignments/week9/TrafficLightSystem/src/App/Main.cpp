@@ -16,25 +16,28 @@ std::string getUserLane(InputHandler& input)
 {
     int userChoice;
     printLaneMenu();
-    input.getUserInput("Enter your lane : ", userChoice);
-    std::string userLane;
-    switch(userChoice)
+    std::string userLane{};
+    while(userLane.empty())
     {
-        case 1:
-            userLane = "North";
-            break;
-        case 2:
-            userLane = "East";
-            break;
-        case 3:
-            userLane = "South";
-            break;
-        case 4:
-            userLane = "West";
-            break;
-        default:
-            userLane = "";
-            std::cout << "Invalid Choice\n";
+        input.getUserInput("Enter your lane : ", userChoice);
+        switch(userChoice)
+        {
+            case 1:
+                userLane = "North";
+                break;
+            case 2:
+                userLane = "East";
+                break;
+            case 3:
+                userLane = "South";
+                break;
+            case 4:
+                userLane = "West";
+                break;
+            default:
+                userLane = "";
+                std::cout << "Invalid Choice.\nPlease enter valid choice.\n";
+        }
     }
     return userLane;
 }
@@ -50,56 +53,72 @@ std::string getUserDirection(InputHandler& input)
 {
     int userChoice;
     printDirectionMenu();
-    input.getUserInput("Enter your direction in which you want to move : ", userChoice);
-    std::string direction;
-    switch(userChoice)
+    std::string direction{};
+    while(direction.empty())
     {
-        case 1:
-            direction = "straight";
-            break;
-        case 2:
-            direction = "left";
-            break;
-        case 3:
-            direction = "right";
-            break;
-        default:
-            direction = "";
-            std::cout << "Invalid Choice\n";
+        input.getUserInput("Enter your direction in which you want to move : ", userChoice);
+        switch(userChoice)
+        {
+            case 1:
+                direction = "straight";
+                break;
+            case 2:
+                direction = "left";
+                break;
+            case 3:
+                direction = "right";
+                break;
+            default:
+                direction = "";
+                std::cout << "Invalid Choice.\nPlease enter valid choice.\n";
+        }
     }
     return direction;
 }
 
 int main()
 {
-    TrafficSystem system;
     InputHandler input;
-    int vehicleCounter = 1;
-    while (true)
+    std::string filePath = "/home/riteshkgs/Desktop/cpprogramming/CPP-training/assignments/week9/Output/output.txt";
+    ILogger* logger = new Logger(filePath);
+    TrafficSignal* signal = new TrafficSignal();
+    ITrafficLightController* controller = new TrafficLightController(signal, logger, 10);
+    std::unordered_map<std::string, ILane*> lanes;
+    for (const auto& directions : {"North", "East", "South", "West"})
     {
-        try
+        ILane* lane = new Lane(directions, signal, logger);
+        lanes[directions] = lane;
+    }
+    TrafficSystem* system = new TrafficSystem(signal, logger, controller, lanes);
+    bool close = false;
+    while (!close)
+    {
+        int userChoice;
+        std::cout << "1. generate process request\n";
+        std::cout << "2. close simulation\n";
+        input.getUserInput("Enter your choice : ", userChoice);
+        switch(userChoice)
         {
-            std::string lane = getUserLane(input);
-            while (lane.empty())
+            case 1:
             {
-                std::cout << "Please enter valid choice.\n";
-                lane = getUserLane(input);
+                std::string lane = getUserLane(input);
+                std::string direction = getUserDirection(input);
+                system->processRequest(lane,direction);
+                break;
             }
-            std::string direction = getUserDirection(input);
-            while (direction.empty())
+            case 2:
             {
-                std::cout << "Please enter valid choice.\n";
-                direction = getUserDirection(input);
+                close = true;
+                break;
             }
-            std::string vehicleId = "vehicle" + std::to_string(vehicleCounter++);
-            system.assignVehicleToLane(lane, vehicleId, direction);
-            system.waitUntilProcessed(lane);
-            std::cout << vehicleId << " processed from " << lane << " going " << direction << ".\n";
-        } 
-        catch (const std::exception& e)
-        {
-            std::cerr << "Unexpected error: " << e.what() << "\n";
+            default:
+                std::cout << "Invalid choice\n";
         }
     }
+    delete system;
+    delete logger;
+    delete signal;
+    delete controller;
+    for (auto& [direction, lane] : lanes) delete lane;
     return 0;
 }

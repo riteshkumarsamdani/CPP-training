@@ -5,23 +5,22 @@
 #include <thread>
 #include "Lane.h"
 #include "TrafficLightController.h"
-#include "SharedState.h"
+#include "TrafficSignal.h"
 #include "Logger.h"
 
 class TrafficSystem
 {
     private:
-        std::unordered_map<std::string, Lane*> lanes;
+        std::unordered_map<std::string, ILane*> lanes;
         std::thread controllerThread;
-        SharedState* shared;
+        TrafficSignal* signal;
         ILogger* logger;
-        TrafficLightController* controller;
-        std::vector<std::thread> laneThreads;
+        ITrafficLightController* controller;
+
     public:
-        TrafficSystem();
+        TrafficSystem(TrafficSignal* signal, ILogger* logger, ITrafficLightController* controller, std::unordered_map<std::string, ILane*> lanes);
         ~TrafficSystem();
-        bool assignVehicleToLane(const std::string& laneName, const std::string& vehicleId, const std::string& direction);
-        bool waitUntilProcessed(const std::string& laneName); 
+        bool processRequest(const std::string& laneName, const std::string& direction);
 };
 
 #endif

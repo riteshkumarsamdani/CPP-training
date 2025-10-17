@@ -6,11 +6,9 @@
 class ILane 
 {
     public:
-        virtual bool processVehicle(const std::string& vehicleId, const std::string& direction) = 0;
-        virtual void run() = 0;
-        virtual void assignVehicle(const std::string& carId, const std::string& direction) = 0;
-        virtual void waitUntilProcessed() = 0;
         virtual ~ILane() = default;
+        virtual void waitForGreenSignal() = 0;
+        virtual bool isSignalGreen(const std::string& direction) = 0;
 };
 
 #endif

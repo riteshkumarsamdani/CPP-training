@@ -2,23 +2,30 @@
 #include <thread>
 #include <chrono>
 
-TrafficLightController::TrafficLightController(SharedState* shared, ILogger* logger)
-    : shared(shared), logger(logger), laneOrder({"North", "East", "South", "West"}) {}
+TrafficLightController::TrafficLightController(TrafficSignal* signal, ILogger* logger, int sleepDuration)
+    : signal(signal), logger(logger), laneOrder({"North", "East", "South", "West"}), run(false), sleepDuration(sleepDuration) {}
+
+void TrafficLightController::stop()
+{
+    run = false;
+}
 
 void TrafficLightController::start()
 {
-    while (true)
+    run = true;
+    while (run)
     {
         for (const auto& lane : laneOrder)
         {
             {
-                std::lock_guard<std::mutex> lock(shared->laneMutex);
-                shared->currentGreenLane = lane;
-                logger->log("Signal GREEN at " + lane);
+                std::lock_guard<std::mutex> lock(signal->laneMutex);
+                signal->currentGreenLane = lane;
+                logger->logToFile("Signal GREEN at " + lane);
             }
-            shared->cv.notify_all();
-            std::this_thread::sleep_for(std::chrono::seconds(10));
-            logger->log("Signal RED at " + lane);
+            signal->signalChangeCV.notify_all();
+            std::this_thread::sleep_for(std::chrono::seconds(sleepDuration));
+            logger->logToFile("Signal RED at " + lane);
+            if(!run) break;
         }
     }
 }

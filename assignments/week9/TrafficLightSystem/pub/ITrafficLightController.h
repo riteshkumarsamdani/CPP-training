@@ -6,6 +6,7 @@ class ITrafficLightController
     public:
         virtual void start() = 0;
         virtual ~ITrafficLightController() = default;
+        virtual void stop() = 0;
 };
 
 #endif

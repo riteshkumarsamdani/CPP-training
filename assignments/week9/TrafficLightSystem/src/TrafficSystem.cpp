@@ -1,53 +1,41 @@
 #include "TrafficSystem.h"
 #include "Logger.h"
 
-TrafficSystem::TrafficSystem()
+TrafficSystem::TrafficSystem(TrafficSignal* signal, ILogger* logger, ITrafficLightController* controller, std::unordered_map<std::string, ILane*> lanes)
+    : signal(signal), logger(logger), controller(controller), lanes(lanes)
 {
-    shared = new SharedState();
-    logger = new Logger();
-    for (const auto& dir : {"North", "East", "South", "West"})
-    {
-        Lane* lane = new Lane(dir, shared, logger);
-        lanes[dir] = lane;
-        laneThreads.emplace_back([lane]() { lane->run(); }); 
-    }
-    controller = new TrafficLightController(shared, logger);
-    controllerThread = std::thread([this]() { controller->start(); });
+    controllerThread = std::thread([controller]() { controller->start(); });
 }
 
-TrafficSystem::~TrafficSystem()
+bool TrafficSystem::processRequest(const std::string& laneName, const std::string& direction)
 {
-    if (controllerThread.joinable()) controllerThread.join();
-    for (auto& thread : laneThreads)
+    bool processed = false;
+    if (lanes.count(laneName))
     {
-        if (thread.joinable()) thread.join();
-    }
-    for (auto& [_, lane] : lanes) delete lane;
-    delete controller;
-    delete logger;
-    delete shared;
-}
-
-bool TrafficSystem::assignVehicleToLane(const std::string& laneName, const std::string& vehicleId, const std::string& direction) {
-    bool assign = false;
-    if (lanes.count(laneName)) 
-    {
-        lanes[laneName]->assignVehicle(vehicleId, direction);
-        assign = true;
+        bool canMove = lanes[laneName]->isSignalGreen(direction);
+        if(canMove)
+        {
+            logger->log("you can proceed from " + laneName + " to " + direction);
+            processed = true;
+        }
+        else
+        {
+            logger->log("wait for signal to green");
+            lanes[laneName]->waitForGreenSignal();
+            logger->log("you can proceed from " + laneName + " to " + direction);
+            processed = true;
+        }
     }
     else
     {
         logger->log("Invalid lane: " + laneName);
+        processed = false;
     }
-    return assign;
+    return processed;
 }
 
-bool TrafficSystem::waitUntilProcessed(const std::string& laneName)
+TrafficSystem::~TrafficSystem()
 {
-    bool wait = false;
-    if (lanes.count(laneName)) {
-        lanes[laneName]->waitUntilProcessed();
-        wait = true;
-    }
-    return wait;
+    controller->stop();
+    if (controllerThread.joinable()) controllerThread.join();
 }

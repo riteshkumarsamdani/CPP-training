@@ -1,7 +1,7 @@
 #ifndef TRAFFIC_LIGHT_CONTROLLER_H
 #define TRAFFIC_LIGHT_CONTROLLER_H
 
-#include "SharedState.h"
+#include "TrafficSignal.h"
 #include "Logger.h"
 #include "ITrafficLightController.h"
 #include <vector>
@@ -11,12 +11,15 @@ class TrafficLightController : public ITrafficLightController
 {
     private:
         std::vector<std::string> laneOrder;
-        SharedState* shared;
+        TrafficSignal* signal;
         ILogger* logger;
+        bool run;
+        int sleepDuration;
 
     public:
-        TrafficLightController(SharedState* shared, ILogger* logger);
+        TrafficLightController(TrafficSignal* signal, ILogger* logger, int sleepDuration);
         void start() override;
+        void stop() override;
 };
 
 #endif
