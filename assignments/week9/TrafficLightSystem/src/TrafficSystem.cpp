@@ -12,7 +12,6 @@ TrafficSystem::TrafficSystem(TrafficSignal* signal, ILogger* logger, ITrafficLig
     {
         logger->log("Thread creation failed: " + std::string(e.what()));
     }
-    
 }
 
 bool TrafficSystem::processRequest(const std::string& laneName, const std::string& direction)
