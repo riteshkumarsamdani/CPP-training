@@ -76,6 +76,7 @@ bool UserRepository::saveUsers(const std::vector<IUser*>& users)
         else
         {
             file << jsonArray.dump(2);
+            file << "\n";
             file.close();
             result = true;
         }

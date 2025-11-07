@@ -87,6 +87,7 @@ bool PostRepository::savePosts(const std::vector<IPost*>& posts)
         else
         {
             file << jsonArray.dump(2);
+            file << "\n";
             file.close();
             saved = true;
         }

@@ -4,7 +4,8 @@
 int main(int argc, char* argv[])
 {
     int status = 0;
-    if (argc < 3) {
+    if (argc < 3)
+    {
         std::cerr << "Usage: " << argv[0] << " <user_file_path> <post_file_path>\n";
         status = 1;
     }
