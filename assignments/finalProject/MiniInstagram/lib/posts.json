@@ -1,0 +1,19 @@
+[
+  {
+    "content": "hello world",
+    "likedByUsers": [
+      "ritesh",
+      "ram"
+    ],
+    "postId": "P1762533015ri",
+    "timestamp": "2025-11-07 22:00:15",
+    "userId": "U1762532920ri"
+  },
+  {
+    "content": "this is instagram",
+    "likedByUsers": [],
+    "postId": "P1762533037ri",
+    "timestamp": "2025-11-07 22:00:37",
+    "userId": "U1762532920ri"
+  }
+]
