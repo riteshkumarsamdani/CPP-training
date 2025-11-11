@@ -28,7 +28,7 @@ void InputHandler::getLineInput(const std::string& prompt, std::string& userInpu
     std::cout << prompt;
     while (true)
     {
-        std::getline(std::cin, userInput);
+        std::getline(std::cin >> std::ws, userInput);
         if (!userInput.empty()) break;
         std::cout << "Input failed!! " << prompt << "\n";
     }
