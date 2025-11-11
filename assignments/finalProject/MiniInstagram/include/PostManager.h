@@ -21,7 +21,7 @@ class PostManager : public IPostManager
         std::vector<IPost*> getPostsByUser(const std::string& userId) override;
         PostResult likePost(const std::string& postId, const std::string& username) override;
         PostResult unlikePost(const std::string& postId, const std::string& username) override;
-        int getLikeCount(const std::string& postId) override;
+        int getPostLikeCount(const std::string& postId) override;
         std::vector<std::string> getUsersWhoLiked(const std::string& postId) override;
 };
 

@@ -50,10 +50,17 @@ void InstaController::mainMenuHandler()
     input.getUserInput("Enter your choice: ", userChoice);
     switch (userChoice)
     {
-        case 1: handleSignUp(); break;
-        case 2: handleSignIn(); break;
-        case 3: running = false; break;
-        default: std::cout << "Invalid choice!\n";
+        case 1: 
+            handleSignUp(); 
+            break;
+        case 2: 
+            handleSignIn(); 
+            break;
+        case 3: 
+            running = false;
+            break;
+        default: 
+            std::cout << "Invalid choice!\n";
     }
 }
 
@@ -73,62 +80,35 @@ void InstaController::userMenuHandler()
     input.getUserInput("Enter your choice: ", userChoice);
     switch (userChoice)
     {
-        case 1: handleCreatePost(); break;
-        case 2: handleViewTimeline(); break;
-        case 3: handleViewMyPosts(); break;
-        case 4: handleLikePost(); break;
-        case 5: handleUnlikePost(); break;
-        case 6: handleViewPostLikes(); break;
-        case 7: handleDeleteUser(); break;
-        case 8: handleDeletePost(); break;
-        case 9: authManager->signOut(); break;
-        default: std::cout << "Invalid choice!\n";
-    }
-}
-
-void InstaController::handleDeleteUser() 
-{
-    IUser* currentUser = authManager->getCurrentUser();
-    if (!currentUser)
-    {
-        std::cout << "No user is currently signed in.\n";
-    }
-    else
-    {
-        std::string username = currentUser->getUsername();
-        std::string userId = currentUser->getUserId();
-        if (authManager->deleteUser(username))
-        {
-            postManager->deletePostsByUser(userId);
-            std::cout << "User and all associated posts deleted successfully.\n";
-            authManager->signOut();
-        }
-        else
-        {
-            std::cout << "Failed to delete user.\n";
-        }
-    }
-}
-
-void InstaController::handleDeletePost()
-{
-    std::string postId;
-    input.getUserInput("Enter post ID to delete: ", postId);
-    std::string userId = authManager->getCurrentUser()->getUserId();
-    PostResult result = postManager->deletePost(postId, userId);
-    switch (result.error)
-    {
-        case PostError::None:
-            std::cout << "Post deleted successfully.\n";
+        case 1: 
+            handleCreatePost(); 
             break;
-        case PostError::Unauthorized:
-            std::cout << "You are not authorized to delete this post!\n";
+        case 2: 
+            handleViewTimeline();
             break;
-        case PostError::NotFound:
-            std::cout << "Post not found!\n";
+        case 3: 
+            handleViewMyPosts(); 
             break;
-        default:
-            std::cout << "Failed to delete post.\n";
+        case 4: 
+            handleLikePost(); 
+            break;
+        case 5: 
+            handleUnlikePost(); 
+            break;
+        case 6: 
+            handleViewPostLikes(); 
+            break;
+        case 7: 
+            handleDeleteUser(); 
+            break;
+        case 8: 
+            handleDeletePost(); 
+            break;
+        case 9:
+            authManager->signOut(); 
+            break;
+        default: 
+            std::cout << "Invalid choice!\n";
     }
 }
 
@@ -298,7 +278,7 @@ void InstaController::handleViewPostLikes()
     std::string postId;
     input.getUserInput("Enter post ID: ", postId);
     std::vector<std::string> likedByUsers = postManager->getUsersWhoLiked(postId);
-    int likeCount = postManager->getLikeCount(postId);
+    int likeCount = postManager->getPostLikeCount(postId);
     std::cout << "\nTotal Likes: " << likeCount << "\n";
     if (likedByUsers.empty())
     {
@@ -311,5 +291,51 @@ void InstaController::handleViewPostLikes()
         {
             std::cout << "  -" << username << std::endl;
         }
+    }
+}
+
+void InstaController::handleDeleteUser() 
+{
+    IUser* currentUser = authManager->getCurrentUser();
+    if (!currentUser)
+    {
+        std::cout << "No user is currently signed in.\n";
+    }
+    else
+    {
+        std::string username = currentUser->getUsername();
+        std::string userId = currentUser->getUserId();
+        if (authManager->deleteUser(username))
+        {
+            postManager->deletePostsByUser(userId);
+            std::cout << "User and all associated posts deleted successfully.\n";
+            authManager->signOut();
+        }
+        else
+        {
+            std::cout << "Failed to delete user.\n";
+        }
+    }
+}
+
+void InstaController::handleDeletePost()
+{
+    std::string postId;
+    input.getUserInput("Enter post ID to delete: ", postId);
+    std::string userId = authManager->getCurrentUser()->getUserId();
+    PostResult result = postManager->deletePost(postId, userId);
+    switch (result.error)
+    {
+        case PostError::None:
+            std::cout << "Post deleted successfully.\n";
+            break;
+        case PostError::Unauthorized:
+            std::cout << "You are not authorized to delete this post!\n";
+            break;
+        case PostError::NotFound:
+            std::cout << "Post not found!\n";
+            break;
+        default:
+            std::cout << "Failed to delete post.\n";
     }
 }

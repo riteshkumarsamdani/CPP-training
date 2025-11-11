@@ -33,7 +33,7 @@ class IPostManager
         virtual IPost* getPostById(const std::string& postId) = 0;
         virtual PostResult likePost(const std::string& postId, const std::string& username) = 0;
         virtual PostResult unlikePost(const std::string& postId, const std::string& username) = 0;
-        virtual int getLikeCount(const std::string& postId) = 0;
+        virtual int getPostLikeCount(const std::string& postId) = 0;
         virtual std::vector<std::string> getUsersWhoLiked(const std::string& postId) = 0;
 };
 

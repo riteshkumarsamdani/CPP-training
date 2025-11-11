@@ -130,7 +130,7 @@ PostResult PostManager::unlikePost(const std::string& postId, const std::string&
     return result;
 }
 
-int PostManager::getLikeCount(const std::string& postId)
+int PostManager::getPostLikeCount(const std::string& postId)
 {
     IPost* post = getPostById(postId);
     return post ? post->getLikeCount() : 0;

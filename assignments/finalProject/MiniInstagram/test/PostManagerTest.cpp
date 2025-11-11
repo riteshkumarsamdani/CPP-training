@@ -81,9 +81,9 @@ TEST_F(PostManagerTest, GivenMultiplePostsByUser_WhenDeletePostsByUserIsCalled_T
     auto* post1 = new MockPost();
     auto* post2 = new MockPost();
     auto* post3 = new MockPost();
-    EXPECT_CALL(*post1, getUserId()).WillRepeatedly(testing::Return(userId));
-    EXPECT_CALL(*post2, getUserId()).WillRepeatedly(testing::Return(userId));
-    EXPECT_CALL(*post3, getUserId()).WillRepeatedly(testing::Return(otherUserId));
+    EXPECT_CALL(*post1, getUserId()).WillOnce(testing::Return(userId));
+    EXPECT_CALL(*post2, getUserId()).WillOnce(testing::Return(userId));
+    EXPECT_CALL(*post3, getUserId()).WillOnce(testing::Return(otherUserId));
     std::vector<IPost*> posts = {post1, post2, post3};
     PostManager manager(posts);
     int count = manager.deletePostsByUser(userId);
@@ -168,7 +168,7 @@ TEST_F(PostManagerTest, GivenPost_WhenGetLikeCountIsCalled_ThenReturnsCorrectCou
     EXPECT_CALL(*post, getLikeCount()).WillOnce(testing::Return(3));
     std::vector<IPost*> posts = {post};
     PostManager manager(posts);
-    int count = manager.getLikeCount(postId);
+    int count = manager.getPostLikeCount(postId);
     EXPECT_EQ(count, 3);
 }
 

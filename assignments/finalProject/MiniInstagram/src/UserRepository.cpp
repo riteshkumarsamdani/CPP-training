@@ -48,7 +48,7 @@ std::vector<IUser*> UserRepository::getAllUsers()
         }
         catch(const std::exception& e)
         {
-            std::cerr << "Error loading data from File" << e.what() << '\n';
+            std::cerr << "Error loading data from File:" << e.what() << '\n';
         }
     }
     return users;

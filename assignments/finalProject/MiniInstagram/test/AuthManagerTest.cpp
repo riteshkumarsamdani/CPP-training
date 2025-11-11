@@ -16,20 +16,8 @@ class AuthManagerTest : public ::testing::Test
     protected:
         std::string username = "alice";
         std::string password = "pass123";
-        std::string otherUsername = "bob";
+        std::string newUsername = "bob";
 
-        IUser* createMockUser(const std::string& name, const std::string& pass, bool useMock = false)
-        {
-            if (useMock)
-            {
-                auto* mock = new MockUser();
-                EXPECT_CALL(*mock, getUsername()).WillRepeatedly(testing::Return(name));
-                EXPECT_CALL(*mock, getPassword()).WillRepeatedly(testing::Return(pass));
-                EXPECT_CALL(*mock, getUserId()).WillRepeatedly(testing::Return("U_" + name));
-                return mock;
-            }
-            return new User(name, pass);
-        }
 };
 
 TEST_F(AuthManagerTest, GivenEmptyFields_WhenSignUpIsCalled_ThenReturnsEmptyFieldsError)
@@ -43,7 +31,8 @@ TEST_F(AuthManagerTest, GivenEmptyFields_WhenSignUpIsCalled_ThenReturnsEmptyFiel
 
 TEST_F(AuthManagerTest, GivenExistingUsername_WhenSignUpIsCalled_ThenReturnsUserExistsError)
 {
-    IUser* user = createMockUser(username, password);
+    MockUser* user = new MockUser();
+    EXPECT_CALL(*user, getUsername()).WillRepeatedly(testing::Return(username));
     std::vector<IUser*> users = {user};
     AuthManager manager(users);
     AuthResult result = manager.signUp(username, "newpass");
@@ -71,17 +60,22 @@ TEST_F(AuthManagerTest, GivenNonexistentUser_WhenSignInIsCalled_ThenReturnsUserN
 
 TEST_F(AuthManagerTest, GivenIncorrectPassword_WhenSignInIsCalled_ThenReturnsInvalidPasswordError)
 {
-    IUser* user = createMockUser(username, "wrongpass");
+    std::string incorrectPassword = "123";
+    MockUser* user = new MockUser();
+    EXPECT_CALL(*user, getUsername()).WillRepeatedly(testing::Return(username));
+    EXPECT_CALL(*user, getPassword()).WillRepeatedly(testing::Return(password));
     std::vector<IUser*> users = {user};
     AuthManager manager(users);
-    AuthResult result = manager.signIn(username, password);
+    AuthResult result = manager.signIn(username, incorrectPassword);
     EXPECT_FALSE(result.success);
     EXPECT_EQ(result.error, AuthError::InvalidPassword);
 }
 
 TEST_F(AuthManagerTest, GivenCorrectCredentials_WhenSignInIsCalled_ThenReturnsSuccessAndSetsCurrentUser)
 {
-    IUser* user = createMockUser(username, password);
+    MockUser* user = new MockUser();
+    EXPECT_CALL(*user, getUsername()).WillRepeatedly(testing::Return(username));
+    EXPECT_CALL(*user, getPassword()).WillRepeatedly(testing::Return(password));
     std::vector<IUser*> users = {user};
     AuthManager manager(users);
     AuthResult result = manager.signIn(username, password);
@@ -94,7 +88,9 @@ TEST_F(AuthManagerTest, GivenCorrectCredentials_WhenSignInIsCalled_ThenReturnsSu
 
 TEST_F(AuthManagerTest, GivenSignedInUser_WhenSignOutIsCalled_ThenCurrentUserIsNull)
 {
-    IUser* user = createMockUser(username, password);
+    MockUser* user = new MockUser();
+    EXPECT_CALL(*user, getUsername()).WillRepeatedly(testing::Return(username));
+    EXPECT_CALL(*user, getPassword()).WillRepeatedly(testing::Return(password));
     std::vector<IUser*> users = {user};
     AuthManager manager(users);
     manager.signIn(username, password);
@@ -105,7 +101,8 @@ TEST_F(AuthManagerTest, GivenSignedInUser_WhenSignOutIsCalled_ThenCurrentUserIsN
 
 TEST_F(AuthManagerTest, GivenExistingUser_WhenDeleteUserIsCalled_ThenReturnsTrueAndRemovesUser)
 {
-    IUser* user = createMockUser(username, password);
+    MockUser* user = new MockUser();
+    EXPECT_CALL(*user, getUsername()).WillRepeatedly(testing::Return(username));
     std::vector<IUser*> users = {user};
     AuthManager manager(users);
     bool result = manager.deleteUser(username);
@@ -115,7 +112,9 @@ TEST_F(AuthManagerTest, GivenExistingUser_WhenDeleteUserIsCalled_ThenReturnsTrue
 
 TEST_F(AuthManagerTest, GivenSignedInUser_WhenDeleteUserIsCalled_ThenCurrentUserIsReset)
 {
-    IUser* user = createMockUser(username, password);
+    MockUser* user = new MockUser();
+    EXPECT_CALL(*user, getUsername()).WillRepeatedly(testing::Return(username));
+    EXPECT_CALL(*user, getPassword()).WillRepeatedly(testing::Return(password));
     std::vector<IUser*> users = {user};
     AuthManager manager(users);
     manager.signIn(username, password);
@@ -134,13 +133,15 @@ TEST_F(AuthManagerTest, GivenNonexistentUser_WhenDeleteUserIsCalled_ThenReturnsF
 
 TEST_F(AuthManagerTest, GivenMultipleUsers_WhenGetUserByUsernameIsCalled_ThenReturnsCorrectUser)
 {
-    IUser* user1 = createMockUser(username, password);
-    IUser* user2 = createMockUser(otherUsername, "xyz");
+    MockUser* user1 = new MockUser();
+    MockUser* user2 = new MockUser();
+    EXPECT_CALL(*user1, getUsername()).WillRepeatedly(testing::Return(username));
+    EXPECT_CALL(*user2, getUsername()).WillRepeatedly(testing::Return(newUsername));
     std::vector<IUser*> users = {user1, user2};
     AuthManager manager(users);
-    IUser* result = manager.getUserByUsername(otherUsername);
+    IUser* result = manager.getUserByUsername(newUsername);
     ASSERT_NE(result, nullptr);
-    EXPECT_EQ(result->getUsername(), otherUsername);
+    EXPECT_EQ(result->getUsername(), newUsername);
 }
 
 TEST_F(AuthManagerTest, GivenNoMatch_WhenGetUserByUsernameIsCalled_ThenReturnsNullptr)
