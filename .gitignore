@@ -1,2 +1,6 @@
 *.out
 .vscode
+*.o
+*.so
+assignments/week6/Parser_using_3rd_party_libraries/lib/*
+runApp
